@@ -1,7 +1,7 @@
 import type { Message } from "@construye/shared";
 import { COMPACTION_THRESHOLD } from "@construye/shared";
-import type { AgentConfig } from "./types.js";
-import { getContextTokenUsage } from "./context-engine.js";
+import type { AgentConfig } from "./types.ts";
+import { getContextTokenUsage } from "./context-engine.ts";
 
 /** Check if compaction is needed */
 export function shouldCompact(messages: Message[], config: AgentConfig): boolean {

@@ -1,4 +1,4 @@
-import type { Database } from "./types.js";
+import type { Database } from "./types.ts";
 import type { Session, Project } from "@construye/shared";
 
 /**

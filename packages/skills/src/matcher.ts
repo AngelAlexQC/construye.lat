@@ -1,5 +1,5 @@
 import type { SkillStub } from "@construye/shared";
-import type { SkillMatch } from "./types.js";
+import type { SkillMatch } from "./types.ts";
 
 /**
  * Match user message to relevant skills using keyword + description matching.

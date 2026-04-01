@@ -1,5 +1,5 @@
-import { DEFAULT_CLI_CONFIG } from "./types.js";
-import type { CliConfig, } from "./types.js";
+import { DEFAULT_CLI_CONFIG } from "./types.ts";
+import type { CliConfig, } from "./types.ts";
 import type { AgentMode } from "@construye/shared";
 
 const VALID_MODES: AgentMode[] = ["plan", "interactive", "auto"];

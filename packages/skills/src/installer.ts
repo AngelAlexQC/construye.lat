@@ -1,7 +1,7 @@
 import type { SkillDefinition, SkillSource } from "@construye/shared";
-import type { SkillInstallResult } from "./types.js";
-import { loadSkillFromSource } from "./loader.js";
-import { SkillRegistry } from "./registry.js";
+import type { SkillInstallResult } from "./types.ts";
+import { loadSkillFromSource } from "./loader.ts";
+import { SkillRegistry } from "./registry.ts";
 
 /**
  * Install a skill from a source into the registry.

@@ -1,4 +1,4 @@
-import type { CostEntry } from "./types.js";
+import type { CostEntry } from "./types.ts";
 
 const PRICE_PER_MILLION: Record<string, { input: number; output: number }> = {
 	"claude-sonnet-4-20250514": { input: 3, output: 15 },

@@ -4,7 +4,7 @@ import * as readline from "node:readline";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import * as os from "node:os";
-import { parseArgs } from "./args.js";
+import { parseArgs } from "./args.ts";
 import { runAgentLoop } from "@construye/core";
 import { ClaudeProvider, WorkersAIProvider, DemoProvider, WORKERS_AI_MODELS } from "@construye/providers";
 import type { ProviderAdapter } from "@construye/providers";
@@ -86,11 +86,11 @@ async function main(): Promise<void> {
 		}
 		provider = new WorkersAIProvider(cfAccountId, cfApiToken);
 		providerName = "workers-ai (Cloudflare)";
-		// Pick best default model for coding
+		// Pick best default model — qwen-coder is fast + good at coding
 		modelName = config.model.startsWith("@cf/") || config.model.startsWith("@hf/")
 			? config.model
 			: WORKERS_AI_MODELS[config.model as keyof typeof WORKERS_AI_MODELS]
-				?? WORKERS_AI_MODELS["llama-3.3"];
+				?? WORKERS_AI_MODELS["qwen-coder"];
 	} else if (anthropicKey) {
 		provider = new ClaudeProvider(anthropicKey);
 		providerName = "anthropic";
@@ -214,7 +214,19 @@ async function main(): Promise<void> {
 
 				try {
 					processing = true;
-					process.stdout.write(`\n${CYAN}`);
+
+					// Spinner while waiting for first token
+					const spinnerFrames = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
+					let spinnerIdx = 0;
+					let gotFirstToken = false;
+					const startTime = Date.now();
+					const spinner = setInterval(() => {
+						if (!gotFirstToken) {
+							const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+							process.stdout.write(`\r  ${CYAN}${spinnerFrames[spinnerIdx]}${RESET} ${DIM}Thinking... ${elapsed}s${RESET}  `);
+							spinnerIdx = (spinnerIdx + 1) % spinnerFrames.length;
+						}
+					}, 80);
 
 					const isOpenAI = providerName.includes("workers-ai") || providerName.includes("openai");
 					const agentConfig = {
@@ -234,10 +246,31 @@ async function main(): Promise<void> {
 						},
 						onStream: (chunk: StreamChunk) => {
 							if (chunk.type === "text" && chunk.content) {
+								if (!gotFirstToken) {
+									gotFirstToken = true;
+									clearInterval(spinner);
+									// Clear spinner line, start fresh
+									process.stdout.write(`\r\x1b[K`);
+								}
 								process.stdout.write(chunk.content);
 							}
 							if (chunk.type === "tool_call" && chunk.tool_call) {
-								process.stdout.write(`${RESET}\n  ${YELLOW}⚡ ${chunk.tool_call.name}${DIM}(${JSON.stringify(chunk.tool_call.arguments).slice(0, 80)})${RESET}\n${CYAN}`);
+								if (!gotFirstToken) {
+									gotFirstToken = true;
+									clearInterval(spinner);
+									process.stdout.write(`\r\x1b[K`);
+								}
+								const args = JSON.stringify(chunk.tool_call.arguments).slice(0, 80);
+								process.stdout.write(`\n  ${YELLOW}⚡ ${chunk.tool_call.name}${DIM}(${args})${RESET}`);
+							}
+							if (chunk.type === "done") {
+								if (!gotFirstToken) {
+									gotFirstToken = true;
+									clearInterval(spinner);
+									process.stdout.write(`\r\x1b[K`);
+								}
+								const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+								process.stdout.write(`${RESET}\n  ${DIM}${elapsed}s${RESET}`);
 							}
 						},
 						onApproval: async (call: ToolCall): Promise<boolean> => {
@@ -254,6 +287,7 @@ async function main(): Promise<void> {
 
 					history = await runAgentLoop(trimmed, history, agentConfig);
 
+					clearInterval(spinner);
 					process.stdout.write(`${RESET}\n\n`);
 				} catch (err: unknown) {
 					const msg = err instanceof Error ? err.message : String(err);

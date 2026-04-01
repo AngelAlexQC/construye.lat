@@ -1,12 +1,16 @@
 /** Base error class for all construye errors */
 export class ConstruyeError extends Error {
+	code: ErrorCode;
+	statusCode: number;
 	constructor(
 		message: string,
-		public code: ErrorCode,
-		public statusCode = 500,
+		code: ErrorCode,
+		statusCode = 500,
 	) {
 		super(message);
 		this.name = "ConstruyeError";
+		this.code = code;
+		this.statusCode = statusCode;
 	}
 }
 

@@ -1,8 +1,8 @@
 import type { Message } from "@construye/shared";
 import { MAX_AGENT_TURNS } from "@construye/shared";
-import type { AgentConfig, StreamCallback } from "./types.js";
-import { assembleContext } from "./context-engine.js";
-import { shouldCompact, compact } from "./compaction.js";
+import type { AgentConfig, StreamCallback } from "./types.ts";
+import { assembleContext } from "./context-engine.ts";
+import { shouldCompact, compact } from "./compaction.ts";
 
 /** Run the agent loop: LLM → tool calls → results → repeat */
 export async function runAgentLoop(
@@ -64,6 +64,9 @@ async function collectResponse(
 		}
 		if (chunk.type === "tool_call" && chunk.tool_call) {
 			toolCalls.push(chunk.tool_call);
+			config.onStream(chunk);
+		}
+		if (chunk.type === "done") {
 			config.onStream(chunk);
 		}
 	}

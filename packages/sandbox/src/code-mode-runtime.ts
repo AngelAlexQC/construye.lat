@@ -1,4 +1,4 @@
-import type { CodeModeApi } from "./types.js";
+import type { CodeModeApi } from "./types.ts";
 
 /**
  * Code Mode runtime: provides the `api` object to user-written TypeScript

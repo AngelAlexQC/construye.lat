@@ -1,4 +1,4 @@
-import type { ToolHandler } from "../types.js";
+import type { ToolHandler } from "../types.ts";
 import { writeFile as fsWriteFile, mkdir } from "node:fs/promises";
 import { resolve, dirname } from "node:path";
 

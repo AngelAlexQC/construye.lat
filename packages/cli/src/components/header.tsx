@@ -1,5 +1,5 @@
 import React from "react";
-import type { CliState } from "../types.js";
+import type { CliState } from "../types.ts";
 
 interface Props {
 	state: CliState;

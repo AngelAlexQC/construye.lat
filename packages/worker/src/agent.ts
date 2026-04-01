@@ -1,4 +1,4 @@
-import type { Env } from "./types.js";
+import type { Env } from "./types.ts";
 
 /**
  * ConstruyeAgent Durable Object: maintains long-lived agent session state.

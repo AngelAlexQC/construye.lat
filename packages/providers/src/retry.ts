@@ -1,5 +1,5 @@
-import type { RetryOptions } from "./types.js";
-import { DEFAULT_RETRY } from "./types.js";
+import type { RetryOptions } from "./types.ts";
+import { DEFAULT_RETRY } from "./types.ts";
 
 export async function withRetry<T>(
 	fn: () => Promise<T>,

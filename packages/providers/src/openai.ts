@@ -1,4 +1,4 @@
-import type { ProviderAdapter } from "./types.js";
+import type { ProviderAdapter } from "./types.ts";
 import type { ModelConfig, StreamChunk, Message } from "@construye/shared";
 import { estimateMessagesTokens } from "@construye/shared";
 

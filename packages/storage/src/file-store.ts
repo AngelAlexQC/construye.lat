@@ -1,4 +1,4 @@
-import type { FileStore } from "./types.js";
+import type { FileStore } from "./types.ts";
 
 /**
  * R2-backed file store for project files and artifacts.

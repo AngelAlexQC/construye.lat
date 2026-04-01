@@ -1,4 +1,4 @@
-import type { Cache } from "./types.js";
+import type { Cache } from "./types.ts";
 
 /**
  * KV-backed cache for session metadata, tool stubs, and fast lookups.

@@ -1,5 +1,5 @@
-export type { SkillStore, SkillMatch, SkillInstallResult } from "./types.js";
-export { SkillRegistry } from "./registry.js";
-export { loadSkillFromSource } from "./loader.js";
-export { matchSkills } from "./matcher.js";
-export { installSkill } from "./installer.js";
+export type { SkillStore, SkillMatch, SkillInstallResult } from "./types.ts";
+export { SkillRegistry } from "./registry.ts";
+export { loadSkillFromSource } from "./loader.ts";
+export { matchSkills } from "./matcher.ts";
+export { installSkill } from "./installer.ts";

@@ -1,5 +1,5 @@
 import type { Session, SessionStatus } from "@construye/shared";
-import type { SessionStore } from "./types.js";
+import type { SessionStore } from "./types.ts";
 
 /** Create a new session */
 export function createSession(

@@ -1,4 +1,4 @@
-import type { SandboxManager, SandboxResult, SandboxOptions, CodeModeApi } from "./types.js";
+import type { SandboxManager, SandboxResult, SandboxOptions, CodeModeApi } from "./types.ts";
 import type { ExecutionLayer } from "@construye/shared";
 
 /**

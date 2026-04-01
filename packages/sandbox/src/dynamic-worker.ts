@@ -1,5 +1,5 @@
-import type { DynamicWorkerExecutor } from "./manager.js";
-import type { SandboxResult, SandboxOptions, CodeModeApi } from "./types.js";
+import type { DynamicWorkerExecutor } from "./manager.ts";
+import type { SandboxResult, SandboxOptions, CodeModeApi } from "./types.ts";
 
 /**
  * Dynamic Worker execution: fast path for file operations.

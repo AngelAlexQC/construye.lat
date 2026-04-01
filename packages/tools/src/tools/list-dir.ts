@@ -1,4 +1,4 @@
-import type { ToolHandler } from "../types.js";
+import type { ToolHandler } from "../types.ts";
 import { readdir } from "node:fs/promises";
 import { resolve } from "node:path";
 

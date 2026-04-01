@@ -1,4 +1,4 @@
-import type { Env, AuthPayload } from "./types.js";
+import type { Env, AuthPayload } from "./types.ts";
 
 const ENCODER = new TextEncoder();
 const DECODER = new TextDecoder();

@@ -1,4 +1,4 @@
-import type { ToolHandler } from "../types.js";
+import type { ToolHandler } from "../types.ts";
 
 export const preview: ToolHandler = {
 	name: "preview",

@@ -1,18 +1,7 @@
 {
 	"extends": "../../tsconfig.base.json",
 	"compilerOptions": {
-		"outDir": "dist",
-		"rootDir": "src",
 		"types": ["@cloudflare/workers-types"]
 	},
-	"include": ["src"],
-	"references": [
-		{ "path": "../shared" },
-		{ "path": "../core" },
-		{ "path": "../tools" },
-		{ "path": "../providers" },
-		{ "path": "../skills" },
-		{ "path": "../storage" },
-		{ "path": "../sandbox" }
-	]
+	"include": ["src"]
 }

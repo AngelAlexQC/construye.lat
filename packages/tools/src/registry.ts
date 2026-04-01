@@ -1,5 +1,5 @@
 import type { ToolStub, ToolDefinition } from "@construye/shared";
-import type { ToolHandler } from "./types.js";
+import type { ToolHandler } from "./types.ts";
 
 /** Registry for lazy-loaded tool definitions */
 export class ToolRegistry {

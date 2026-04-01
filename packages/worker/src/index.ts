@@ -1,4 +1,4 @@
-import type { Env } from "./types.js";
+import type { Env } from "./types.ts";
 
 /**
  * Main Worker entrypoint: routes HTTP requests to the right handler.

@@ -1,4 +1,4 @@
-import type { Queue } from "./types.js";
+import type { Queue } from "./types.ts";
 
 /**
  * Queues-backed message queue for async task processing.

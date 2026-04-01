@@ -1,4 +1,4 @@
-import type { ToolHandler } from "../types.js";
+import type { ToolHandler } from "../types.ts";
 import { exec as execCb } from "node:child_process";
 import { promisify } from "node:util";
 import { resolve } from "node:path";

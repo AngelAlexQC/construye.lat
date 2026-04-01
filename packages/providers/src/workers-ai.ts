@@ -1,4 +1,4 @@
-import type { ProviderAdapter } from "./types.js";
+import type { ProviderAdapter } from "./types.ts";
 import type { ModelConfig, StreamChunk, Message, ToolCall } from "@construye/shared";
 import { estimateMessagesTokens } from "@construye/shared";
 
@@ -18,7 +18,8 @@ export const WORKERS_AI_MODELS = {
 const SYSTEM_PROMPT = `You are construye.lat, an expert AI coding agent.
 You have access to tools for filesystem operations and shell commands.
 When the user asks you to do something, use the appropriate tools.
-Always respond concisely. When using tools, call them directly.`;
+Always respond concisely. When using tools, call them directly.
+CRITICAL: Detect the language of the user's message and ALWAYS respond in that same language. If the user writes in Spanish, respond in Spanish. If in English, respond in English. Match their language exactly.`;
 
 /**
  * Workers AI provider — hybrid approach:
@@ -57,8 +58,8 @@ export class WorkersAIProvider implements ProviderAdapter {
 			// NON-STREAMING: reliable structured tool_calls from Workers AI
 			yield* this.nonStreamingWithTools(openAiMessages, modelId, model, tools);
 		} else {
-			// Text-only: either no tools or forced by loop detection
-			yield* this.nonStreamingText(openAiMessages, modelId, model);
+			// STREAMING: fast first-token for text-only responses
+			yield* this.streamingText(openAiMessages, modelId, model);
 		}
 	}
 
@@ -105,16 +106,33 @@ export class WorkersAIProvider implements ProviderAdapter {
 		}
 
 		const msg = choices[0].message as Record<string, unknown>;
-		this.debug(`Response: content=${!!msg.content}, tool_calls=${!!(msg.tool_calls)}`);
+		this.debug(`Response: content=${!!msg.content}, tool_calls=${!!(msg.tool_calls)}, contentType=${typeof msg.content}`);
 
-		// Emit text content
-		if (msg.content && typeof msg.content === "string") {
-			yield { type: "text", content: msg.content };
+		const emittedCalls: ToolCall[] = [];
+
+		// Emit text content (handle string, object-as-tool-call, and other types)
+		if (msg.content) {
+			if (typeof msg.content === "string") {
+				yield { type: "text", content: msg.content };
+			} else if (typeof msg.content === "object" && !Array.isArray(msg.content)) {
+				// Some models embed tool calls as objects in content field
+				const obj = msg.content as Record<string, unknown>;
+				if (obj.name && typeof obj.name === "string" && obj.arguments) {
+					const toolCall = this.parseToolCall(obj);
+					if (toolCall) {
+						this.debug(`Tool call from content object: ${toolCall.name}`);
+						emittedCalls.push(toolCall);
+						yield { type: "tool_call", tool_call: toolCall };
+					}
+				} else {
+					// Unknown object — serialize to text
+					yield { type: "text", content: JSON.stringify(msg.content) };
+				}
+			}
 		}
 
 		// Emit structured tool calls
 		const rawToolCalls = msg.tool_calls as Array<Record<string, unknown>> | undefined;
-		const emittedCalls: ToolCall[] = [];
 		if (rawToolCalls?.length) {
 			for (const tc of rawToolCalls) {
 				const toolCall = this.parseToolCall(tc);

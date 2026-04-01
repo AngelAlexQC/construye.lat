@@ -1,7 +1,7 @@
-import type { ProviderAdapter, RetryOptions, CostEntry } from "./types.js";
+import type { ProviderAdapter, RetryOptions, CostEntry } from "./types.ts";
 import type { ModelConfig, StreamChunk } from "@construye/shared";
 import type { Message } from "@construye/shared";
-import { DEFAULT_RETRY } from "./types.js";
+import { DEFAULT_RETRY } from "./types.ts";
 
 /**
  * AI Gateway routes all LLM calls through a single Cloudflare endpoint.

@@ -1,4 +1,4 @@
-import type { VectorStore, VectorMatch } from "./types.js";
+import type { VectorStore, VectorMatch } from "./types.ts";
 
 /**
  * Vectorize-backed vector store for semantic search / RAG indexing.

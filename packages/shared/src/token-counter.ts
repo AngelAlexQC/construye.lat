@@ -1,4 +1,4 @@
-import { CHARS_PER_TOKEN } from "./constants.js";
+import { CHARS_PER_TOKEN } from "./constants.ts";
 
 /** Estimate token count for a string (rough: ~4 chars per token) */
 export function estimateTokens(text: string): number {

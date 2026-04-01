@@ -4,15 +4,13 @@
 	"private": true,
 	"type": "module",
 	"bin": {
-		"construye": "dist/index.js"
+		"construye": "src/index.ts"
 	},
 	"main": "src/index.ts",
 	"scripts": {
-		"build": "tsc",
-		"dev": "tsx src/index.ts",
+		"dev": "node src/index.ts",
 		"typecheck": "tsc --noEmit",
-		"test": "vitest run",
-		"clean": "rm -rf dist"
+		"test": "vitest run"
 	},
 	"dependencies": {
 		"@construye/shared": "workspace:*",
@@ -24,7 +22,6 @@
 		"react": "^19.0.0"
 	},
 	"devDependencies": {
-		"@types/react": "^19.0.0",
-		"tsx": "^4.0.0"
+		"@types/react": "^19.0.0"
 	}
 }

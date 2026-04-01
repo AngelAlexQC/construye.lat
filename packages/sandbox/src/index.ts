@@ -3,9 +3,9 @@ export type {
 	SandboxOptions,
 	CodeModeApi,
 	SandboxManager,
-} from "./types.js";
-export { SandboxOrchestrator } from "./manager.js";
-export type { DynamicWorkerExecutor, ContainerExecutor } from "./manager.js";
-export { DynamicWorker } from "./dynamic-worker.js";
-export { Container } from "./container.js";
-export { createCodeModeApi } from "./code-mode-runtime.js";
+} from "./types.ts";
+export { SandboxOrchestrator } from "./manager.ts";
+export type { DynamicWorkerExecutor, ContainerExecutor } from "./manager.ts";
+export { DynamicWorker } from "./dynamic-worker.ts";
+export { Container } from "./container.ts";
+export { createCodeModeApi } from "./code-mode-runtime.ts";

@@ -1,4 +1,4 @@
-import type { ToolHandler } from "../types.js";
+import type { ToolHandler } from "../types.ts";
 
 export const askUser: ToolHandler = {
 	name: "ask_user",

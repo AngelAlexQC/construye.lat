@@ -1,5 +1,5 @@
-import type { ContainerExecutor } from "./manager.js";
-import type { SandboxResult, SandboxOptions } from "./types.js";
+import type { ContainerExecutor } from "./manager.ts";
+import type { SandboxResult, SandboxOptions } from "./types.ts";
 
 /**
  * Container execution: heavy path for shell commands, builds, tests.

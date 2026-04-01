@@ -1,5 +1,5 @@
 import type { SkillDefinition, SkillStub } from "@construye/shared";
-import type { SkillStore } from "./types.js";
+import type { SkillStore } from "./types.ts";
 
 export class SkillRegistry {
 	private store: SkillStore;

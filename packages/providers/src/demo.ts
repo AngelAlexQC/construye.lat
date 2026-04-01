@@ -1,4 +1,4 @@
-import type { ProviderAdapter } from "./types.js";
+import type { ProviderAdapter } from "./types.ts";
 import type { ModelConfig, StreamChunk, Message } from "@construye/shared";
 
 /** Demo provider that simulates an AI agent for testing without API keys */

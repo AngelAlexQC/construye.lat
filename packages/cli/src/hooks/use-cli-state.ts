@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
-import type { CliState, CliConfig } from "../types.js";
-import { DEFAULT_CLI_CONFIG } from "../types.js";
+import type { CliState, CliConfig } from "../types.ts";
+import { DEFAULT_CLI_CONFIG } from "../types.ts";
 
 export function useCliState(initialConfig?: Partial<CliConfig>): {
 	state: CliState;
