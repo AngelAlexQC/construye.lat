@@ -1,0 +1,27 @@
+{
+	"name": "@construye/worker",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"main": "src/index.ts",
+	"scripts": {
+		"dev": "wrangler dev",
+		"deploy": "wrangler deploy",
+		"typecheck": "tsc --noEmit",
+		"test": "vitest run",
+		"clean": "rm -rf dist .wrangler"
+	},
+	"dependencies": {
+		"@construye/shared": "workspace:*",
+		"@construye/core": "workspace:*",
+		"@construye/tools": "workspace:*",
+		"@construye/providers": "workspace:*",
+		"@construye/skills": "workspace:*",
+		"@construye/storage": "workspace:*",
+		"@construye/sandbox": "workspace:*"
+	},
+	"devDependencies": {
+		"wrangler": "^4.0.0",
+		"@cloudflare/workers-types": "^4.0.0"
+	}
+}

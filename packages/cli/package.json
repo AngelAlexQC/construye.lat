@@ -1,0 +1,30 @@
+{
+	"name": "@construye/cli",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"bin": {
+		"construye": "dist/index.js"
+	},
+	"main": "src/index.ts",
+	"scripts": {
+		"build": "tsc",
+		"dev": "tsx src/index.ts",
+		"typecheck": "tsc --noEmit",
+		"test": "vitest run",
+		"clean": "rm -rf dist"
+	},
+	"dependencies": {
+		"@construye/shared": "workspace:*",
+		"@construye/core": "workspace:*",
+		"@construye/tools": "workspace:*",
+		"@construye/providers": "workspace:*",
+		"@construye/skills": "workspace:*",
+		"ink": "^5.1.0",
+		"react": "^19.0.0"
+	},
+	"devDependencies": {
+		"@types/react": "^19.0.0",
+		"tsx": "^4.0.0"
+	}
+}

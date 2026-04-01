@@ -1,0 +1,35 @@
+name = "construye-worker"
+main = "src/index.ts"
+compatibility_date = "2025-03-30"
+
+[durable_objects]
+bindings = [
+	{ name = "AGENT", class_name = "ConstruyeAgent" }
+]
+
+[[migrations]]
+tag = "v1"
+new_classes = ["ConstruyeAgent"]
+
+[vars]
+AI_GATEWAY_URL = "https://gateway.ai.cloudflare.com/v1"
+
+[[r2_buckets]]
+binding = "BUCKET"
+bucket_name = "construye-files"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "construye-db"
+database_id = ""
+
+[[kv_namespaces]]
+binding = "KV"
+id = ""
+
+[[queues.producers]]
+binding = "QUEUE"
+queue = "construye-tasks"
+
+[ai]
+binding = "AI"
