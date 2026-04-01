@@ -501,16 +501,20 @@ describe("benchmark: capabilities-scorecard", () => {
 	const capabilities: Capability[] = [
 		{ name: "Agent Loop (streaming)", status: "implemented", score: 8, notes: "While loop with tool calls, streaming, error handling" },
 		{ name: "Multi-model routing", status: "implemented", score: 7, notes: "6 task types → 3 Workers AI models" },
-		{ name: "Tool system (14 tools)", status: "implemented", score: 7, notes: "Registry, stubs, execution, approval" },
-		{ name: "Context engine", status: "implemented", score: 6, notes: "System prompt, project identity, tool stubs, skills" },
+		{ name: "Tool system (18 tools)", status: "implemented", score: 8, notes: "Registry, stubs, execution, approval — 18 registered tools" },
+		{ name: "Context engine", status: "implemented", score: 7, notes: "System prompt, project identity, tool stubs, skills, auto-detect" },
 		{ name: "Compaction", status: "implemented", score: 6, notes: "80% threshold, summary-based, cheapest model" },
 		{ name: "Session persistence", status: "implemented", score: 7, notes: "JSONL files, load/save/list/delete" },
 		{ name: "Error recovery", status: "implemented", score: 6, notes: "3 retries, exponential backoff, transient detection" },
 		{ name: "Git integration", status: "implemented", score: 5, notes: "Real execFile, command whitelist, security" },
 		{ name: "Tool call loop detection", status: "implemented", score: 5, notes: "Signature tracking, force text-only after 2 repeats" },
+		{ name: "Web search & browse", status: "implemented", score: 7, notes: "Brave Search API + HTML→text converter, URL fetch" },
+		{ name: "Codebase indexing (TF-IDF)", status: "implemented", score: 6, notes: "TF-IDF search, file collection, relevance scoring, preview" },
+		{ name: "Project detection", status: "implemented", score: 6, notes: "Auto-detect Node.js/Python/Rust/Go, frameworks, monorepo" },
+		{ name: "Task memory", status: "implemented", score: 5, notes: "Session-scoped scratchpad, CRUD operations" },
+		{ name: "Terminal rendering", status: "implemented", score: 7, notes: "Syntax highlighting, tool icons, activity labels, bordered code" },
 		{ name: "Post-edit verification", status: "partial", score: 3, notes: "TypeScript typecheck only, no linting/tests yet" },
 		{ name: "Code Mode / batching", status: "planned", score: 0, notes: "Placeholder — needs Dynamic Workers" },
-		{ name: "Codebase indexing (RAG)", status: "planned", score: 0, notes: "Planned — needs Vectorize" },
 		{ name: "Sub-agents", status: "planned", score: 0, notes: "Planned — needs orchestration" },
 		{ name: "MCP support", status: "planned", score: 0, notes: "Planned — McpAgent + client" },
 		{ name: "Extended thinking", status: "planned", score: 0, notes: "Planned — QwQ routing exists, budget control missing" },
@@ -563,7 +567,7 @@ describe("benchmark: capabilities-scorecard", () => {
 			{ name: "Gemini CLI", score: 78, price: "Free tier!", model: "Gemini 3.1 Pro", sweBench: "78.8% Verified" },
 			{ name: "OpenCode", score: 70, price: "API costs", model: "75+ providers", sweBench: "~65% est." },
 			{ name: "Cline", score: 72, price: "Free + API", model: "BYOK", sweBench: "~60% est." },
-			{ name: "construye.lat", score: 35, price: "FREE (Workers AI)", model: "Kimi K2.5 (76.8%)", sweBench: "TBD" },
+			{ name: "construye.lat", score: 45, price: "FREE (Workers AI)", model: "Kimi K2.5 (76.8%)", sweBench: "TBD" },
 		];
 
 		console.log("\n  ═══════════════════════════════════════════════════════════════");

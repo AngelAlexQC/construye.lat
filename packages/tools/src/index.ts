@@ -17,6 +17,10 @@ export { preview } from "./tools/preview.ts";
 export { browse } from "./tools/browse.ts";
 export { askUser } from "./tools/ask-user.ts";
 export { delegate } from "./tools/delegate.ts";
+export { webSearch } from "./tools/web-search.ts";
+export { webFetch } from "./tools/web-fetch.ts";
+export { projectDetect } from "./tools/project-detect.ts";
+export { taskMemory } from "./tools/task-memory.ts";
 
 import type { ToolHandler } from "./types.ts";
 import { ToolRegistry } from "./registry.ts";
@@ -34,11 +38,15 @@ import { preview } from "./tools/preview.ts";
 import { browse } from "./tools/browse.ts";
 import { askUser } from "./tools/ask-user.ts";
 import { delegate } from "./tools/delegate.ts";
+import { webSearch } from "./tools/web-search.ts";
+import { webFetch } from "./tools/web-fetch.ts";
+import { projectDetect } from "./tools/project-detect.ts";
+import { taskMemory } from "./tools/task-memory.ts";
 
 const ALL_TOOLS: ToolHandler[] = [
 	readFile, writeFile, editFile, searchText, searchSemantic,
 	listDir, glob, codeMode, exec, git, preview, browse,
-	askUser, delegate,
+	askUser, delegate, webSearch, webFetch, projectDetect, taskMemory,
 ];
 
 export function createDefaultRegistry(): ToolRegistry {

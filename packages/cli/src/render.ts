@@ -1,13 +1,14 @@
 import chalk from "chalk";
 import { Marked } from "marked";
 import { markedTerminal } from "marked-terminal";
+import { highlight } from "cli-highlight";
 
 // ── Layout constants ──────────────────────────────────
 export const TERM_WIDTH = Math.min(process.stdout.columns || 80, 100);
 const INNER_WIDTH = TERM_WIDTH - 6;
 
 // ── Unicode symbols ───────────────────────────────────
-const S = {
+export const S = {
 	topLeft: "╭", topRight: "╮",
 	bottomLeft: "╰", bottomRight: "╯",
 	horizontal: "─", vertical: "│",
@@ -16,6 +17,8 @@ const S = {
 	check: "✔", cross: "✘",
 	bolt: "⚡", clock: "⏱",
 	chart: "📊", dot: "·", arrow: "→",
+	search: "🔍", globe: "🌐", brain: "🧠",
+	folder: "📁", file: "📄",
 };
 
 // ── Spinner frames ────────────────────────────────────
@@ -25,6 +28,22 @@ export function spinnerFrame(idx: number): string {
 	return SPINNER[idx % SPINNER.length];
 }
 
+// ── Syntax highlighting ───────────────────────────────
+const LANG_ALIASES: Record<string, string> = {
+	ts: "typescript", js: "javascript", tsx: "typescript", jsx: "javascript",
+	py: "python", rb: "ruby", sh: "bash", zsh: "bash", yml: "yaml",
+	md: "markdown", rs: "rust", tf: "hcl", toml: "ini",
+};
+
+export function highlightCode(code: string, lang?: string): string {
+	const language = lang ? (LANG_ALIASES[lang] ?? lang) : undefined;
+	try {
+		return highlight(code, { language, ignoreIllegals: true });
+	} catch {
+		return code;
+	}
+}
+
 // ── Markdown renderer ─────────────────────────────────
 const md = new Marked(
 	markedTerminal({
@@ -32,6 +51,13 @@ const md = new Marked(
 		width: INNER_WIDTH,
 		tab: 2,
 		showSectionPrefix: false,
+		code: (code: string, lang?: string) => {
+			const highlighted = highlightCode(code, lang);
+			const langLabel = lang ? chalk.dim(` ${lang}`) : "";
+			const border = chalk.dim("│");
+			const lines = highlighted.split("\n").map((l: string) => `  ${border} ${l}`).join("\n");
+			return `\n  ${chalk.dim("┌──")}${langLabel}\n${lines}\n  ${chalk.dim("└──")}\n`;
+		},
 	}) as any,
 );
 
@@ -148,16 +174,49 @@ export function indentedMarkdown(text: string): string {
 }
 
 // ── Tool call rendering ───────────────────────────────
+const TOOL_ICONS: Record<string, string> = {
+	web_search: S.search,
+	web_fetch: S.globe,
+	browse: S.globe,
+	search_semantic: S.brain,
+	search_text: S.search,
+	read_file: S.file,
+	write_file: S.file,
+	edit_file: S.file,
+	glob: S.folder,
+	list_dir: S.folder,
+	exec: S.bolt,
+	git: S.bolt,
+};
+
+function toolIcon(name: string): string {
+	return TOOL_ICONS[name] ?? S.bolt;
+}
+
 export function toolCallHeader(name: string, args: string): string {
 	const shortArgs = args.length > 70 ? args.slice(0, 67) + "..." : args;
+	const icon = toolIcon(name);
 	const labelLen = name.length + 6;
 	const remaining = Math.max(TERM_WIDTH - labelLen - 8, 1);
 
 	return [
 		"",
-		`  ${chalk.dim(S.teeRight + S.horizontal)} ${chalk.yellow(S.bolt)} ${chalk.bold.yellow(name)} ${chalk.dim(hLine(remaining))}`,
+		`  ${chalk.dim(S.teeRight + S.horizontal)} ${chalk.yellow(icon)} ${chalk.bold.yellow(name)} ${chalk.dim(hLine(remaining))}`,
 		`  ${chalk.dim(S.vertical)}  ${chalk.dim(shortArgs)}`,
 	].join("\n");
+}
+
+/** Activity line shown during long-running tools */
+export function toolCallActivity(name: string, frame: string): string {
+	const labels: Record<string, string> = {
+		web_search: "buscando en internet...",
+		web_fetch: "descargando página...",
+		browse: "navegando...",
+		search_semantic: "buscando en codebase...",
+		exec: "ejecutando comando...",
+	};
+	const label = labels[name] ?? "ejecutando...";
+	return `\n  ${chalk.dim(S.vertical)}  ${chalk.cyan(frame)} ${chalk.dim(label)}`;
 }
 
 export function toolCallExecuting(): string {
@@ -167,7 +226,14 @@ export function toolCallExecuting(): string {
 export function toolCallDone(success: boolean, elapsed: string, preview?: string): string {
 	const lines: string[] = [];
 	if (preview) {
-		lines.push(`  ${chalk.dim(S.vertical)}  ${chalk.dim(preview)}`);
+		// Truncate long previews to 3 lines
+		const previewLines = preview.split("\n");
+		const short = previewLines.length > 3
+			? previewLines.slice(0, 3).join("\n") + chalk.dim(` ... (+${previewLines.length - 3} líneas)`)
+			: preview;
+		for (const l of short.split("\n")) {
+			lines.push(`  ${chalk.dim(S.vertical)}  ${chalk.dim(l)}`);
+		}
 	}
 	if (success) {
 		lines.push(`  ${chalk.dim(S.bottomLeft + S.horizontal)} ${chalk.green(S.check + " " + elapsed + "s")}`);

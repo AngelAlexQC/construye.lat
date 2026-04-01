@@ -54,6 +54,9 @@ importers:
       chalk:
         specifier: ^5.6.2
         version: 5.6.2
+      cli-highlight:
+        specifier: ^2.1.11
+        version: 2.1.11
       ink:
         specifier: ^5.1.0
         version: 5.2.1(@types/react@18.3.28)(react@18.3.1)
