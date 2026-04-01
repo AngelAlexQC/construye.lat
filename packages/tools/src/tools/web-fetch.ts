@@ -3,9 +3,9 @@ import type { ToolHandler } from "../types.ts";
 /**
  * Fetch a specific URL and return its content as clean text/markdown.
  *
- * Primary: Cloudflare Browser Rendering /markdown endpoint (FREE 10 min/day)
+ * Primary: Browser Worker proxy /markdown endpoint (FREE 10 min/day)
  *   → Renders JavaScript, strips nav/sidebar, returns clean Markdown
- *   → Requires CF_API_TOKEN + CF_ACCOUNT_ID
+ *   → Requires BROWSER_WORKER_URL + BROWSER_WORKER_KEY env vars
  *
  * Fallback: native fetch + lightweight HTML → text conversion (zero-dep)
  */

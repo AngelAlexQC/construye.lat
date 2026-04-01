@@ -26,35 +26,99 @@ interface RequestBody {
 
 const BLOCKED_RESOURCES = new Set(["image", "media", "font", "stylesheet"]);
 
+/** Max request body size in bytes (256 KB) */
+const MAX_BODY_SIZE = 256 * 1024;
+
+/**
+ * Timing-safe string comparison to prevent timing attacks on auth key.
+ */
+function timingSafeEqual(a: string, b: string): boolean {
+	if (a.length !== b.length) return false;
+	const encoder = new TextEncoder();
+	const aBuf = encoder.encode(a);
+	const bBuf = encoder.encode(b);
+	if (aBuf.byteLength !== bBuf.byteLength) return false;
+	// Use crypto.subtle.timingSafeEqual if available (CF Workers)
+	let result = 0;
+	for (let i = 0; i < aBuf.byteLength; i++) {
+		result |= aBuf[i] ^ bBuf[i];
+	}
+	return result === 0;
+}
+
+/**
+ * Block SSRF: reject private, reserved, and loopback IPs/hostnames.
+ */
+function isBlockedHost(hostname: string): boolean {
+	// Block obvious internal hostnames
+	if (hostname === "localhost" || hostname.endsWith(".local") || hostname.endsWith(".internal")) return true;
+
+	// Try to parse as IP
+	const parts = hostname.split(".");
+	if (parts.length === 4 && parts.every((p) => /^\d{1,3}$/.test(p))) {
+		const octets = parts.map(Number);
+		const [a, b] = octets;
+		// 127.x.x.x — loopback
+		if (a === 127) return true;
+		// 10.x.x.x — private
+		if (a === 10) return true;
+		// 172.16-31.x.x — private
+		if (a === 172 && b >= 16 && b <= 31) return true;
+		// 192.168.x.x — private
+		if (a === 192 && b === 168) return true;
+		// 169.254.x.x — link-local / cloud metadata
+		if (a === 169 && b === 254) return true;
+		// 0.x.x.x
+		if (a === 0) return true;
+	}
+
+	// IPv6 loopback/link-local patterns
+	if (hostname === "[::1]" || hostname.startsWith("[fe80:") || hostname.startsWith("[fc") || hostname.startsWith("[fd")) return true;
+
+	return false;
+}
+
 export default {
 	async fetch(request: Request, env: Env): Promise<Response> {
-		// Auth check
-		const authKey = request.headers.get("X-Auth-Key");
-		if (env.AUTH_KEY && authKey !== env.AUTH_KEY) {
+		// Auth check — timing-safe comparison
+		const authKey = request.headers.get("X-Auth-Key") ?? "";
+		if (!env.AUTH_KEY || !timingSafeEqual(authKey, env.AUTH_KEY)) {
 			return Response.json({ success: false, error: "Unauthorized" }, { status: 401 });
 		}
 
 		if (request.method !== "POST") {
-			return Response.json({
-				success: true,
-				endpoints: ["POST /markdown", "POST /json"],
-				usage: "Send { url } in body",
-			});
+			return Response.json({ success: true, status: "ok" });
 		}
 
 		const url = new URL(request.url);
 		const path = url.pathname;
 
 		try {
+			// Check body size
+			const contentLength = Number(request.headers.get("content-length") ?? "0");
+			if (contentLength > MAX_BODY_SIZE) {
+				return Response.json({ success: false, error: "Request body too large" }, { status: 413 });
+			}
+
 			const body = (await request.json()) as RequestBody;
 			if (!body.url) {
 				return Response.json({ success: false, error: "url required" }, { status: 400 });
 			}
 
-			// Validate URL
-			const parsedUrl = new URL(body.url);
+			// Validate URL — protocol + SSRF blocklist
+			let parsedUrl: URL;
+			try {
+				parsedUrl = new URL(body.url);
+			} catch {
+				return Response.json({ success: false, error: "Invalid URL" }, { status: 400 });
+			}
+
 			if (!["http:", "https:"].includes(parsedUrl.protocol)) {
 				return Response.json({ success: false, error: "Only HTTP/HTTPS URLs" }, { status: 400 });
+			}
+
+			if (isBlockedHost(parsedUrl.hostname)) {
+				return Response.json({ success: false, error: "Blocked: private/internal URLs not allowed" }, { status: 403 });
 			}
 
 			if (path === "/markdown") {
