@@ -5,7 +5,8 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import * as os from "node:os";
 import { parseArgs } from "./args.ts";
-import { runAgentLoop } from "@construye/core";
+import { runAgentLoop, createSession, updateSessionStats, FileSessionStore } from "@construye/core";
+import type { Session } from "@construye/shared";
 import { ClaudeProvider, WorkersAIProvider, DemoProvider, WORKERS_AI_MODELS } from "@construye/providers";
 import type { ProviderAdapter } from "@construye/providers";
 import {
@@ -106,9 +107,13 @@ async function main(): Promise<void> {
 	const registry = createDefaultRegistry();
 	const workingDir = process.cwd();
 
+	// Session persistence
+	const sessionStore = new FileSessionStore();
+	let session = createSession("local", "cli-user", modelName);
+
 	const toolContext: ToolContext = {
 		workingDir,
-		sessionId: `session_${Date.now()}`,
+		sessionId: session.id,
 		projectId: "local",
 	};
 
@@ -153,6 +158,14 @@ async function main(): Promise<void> {
 		activate: async (_name: string) => "Skill not loaded",
 		loadReference: async (_skill: string, _path: string) => "",
 	};
+
+	// Load project identity (CONSTRUYE.md)
+	let projectIdentity: string | undefined;
+	try {
+		projectIdentity = fs.readFileSync(path.join(workingDir, "CONSTRUYE.md"), "utf-8");
+	} catch {
+		// No CONSTRUYE.md — that's fine
+	}
 
 	// Print banner
 	console.log(`\n${BOLD}${CYAN}  ╔═══════════════════════════════════════╗${RESET}`);
@@ -202,12 +215,60 @@ async function main(): Promise<void> {
 
 				if (trimmed === "/clear") {
 					history = [];
-					console.log(`${DIM}  History cleared.${RESET}\n`);
+					session = createSession("local", "cli-user", modelName);
+					console.log(`${DIM}  History cleared. New session started.${RESET}\n`);
 					prompt();
 					return;
 				}
 				if (trimmed === "/history") {
-					console.log(`${DIM}  ${history.length} messages in history${RESET}\n`);
+					console.log(`${DIM}  ${history.length} messages in history | Session: ${session.id.slice(0, 8)}${RESET}\n`);
+					prompt();
+					return;
+				}
+				if (trimmed === "/sessions") {
+					const recent = await sessionStore.listRecent(5);
+					if (recent.length === 0) {
+						console.log(`${DIM}  No saved sessions.${RESET}\n`);
+					} else {
+						console.log(`${DIM}  Recent sessions:${RESET}`);
+						for (const r of recent) {
+							const msgs = (await sessionStore.load(r.id))?.messages.length ?? 0;
+							console.log(`  ${DIM}${r.id.slice(0, 8)}${RESET}  ${msgs} msgs  ${r.session.started_at}`);
+						}
+						console.log();
+					}
+					prompt();
+					return;
+				}
+				if (trimmed.startsWith("/resume")) {
+					const prefix = trimmed.split(" ")[1]?.trim();
+					if (!prefix) {
+						const recent = await sessionStore.listRecent(1);
+						if (recent.length === 0) {
+							console.log(`${DIM}  No sessions to resume.${RESET}\n`);
+							prompt();
+							return;
+						}
+						const loaded = await sessionStore.load(recent[0].id);
+						if (loaded) {
+							session = loaded.session;
+							history = loaded.messages;
+							console.log(`${GREEN}  Resumed session ${session.id.slice(0, 8)} (${history.length} messages)${RESET}\n`);
+						}
+					} else {
+						const recent = await sessionStore.listRecent(20);
+						const match = recent.find((r) => r.id.startsWith(prefix));
+						if (match) {
+							const loaded = await sessionStore.load(match.id);
+							if (loaded) {
+								session = loaded.session;
+								history = loaded.messages;
+								console.log(`${GREEN}  Resumed session ${session.id.slice(0, 8)} (${history.length} messages)${RESET}\n`);
+							}
+						} else {
+							console.log(`${RED}  No session matching '${prefix}'${RESET}\n`);
+						}
+					}
 					prompt();
 					return;
 				}
@@ -283,9 +344,13 @@ async function main(): Promise<void> {
 						},
 						maxTurns: 15,
 						tools: anthropicTools,
+						projectIdentity,
 					};
 
 					history = await runAgentLoop(trimmed, history, agentConfig);
+
+					// Persist session to disk
+					await sessionStore.save(session.id, { session, messages: history });
 
 					clearInterval(spinner);
 					process.stdout.write(`${RESET}\n\n`);

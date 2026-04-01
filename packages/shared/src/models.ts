@@ -5,7 +5,7 @@ export type AgentMode = "plan" | "interactive" | "auto";
 export type SessionStatus = "active" | "paused" | "completed";
 
 /** Model task classification for smart routing */
-export type TaskType = "reasoning" | "coding" | "file_ops" | "planning" | "embedding";
+export type TaskType = "reasoning" | "coding" | "file_ops" | "planning" | "embedding" | "simple_query" | "compaction";
 
 /** A session represents one agent conversation */
 export interface Session {

@@ -1,25 +1,50 @@
 import type { ProviderAdapter } from "./types.ts";
 import type { ModelConfig, StreamChunk, Message, ToolCall } from "@construye/shared";
-import { estimateMessagesTokens } from "@construye/shared";
+import { estimateMessagesTokens, WORKERS_AI_MODEL_MAP } from "@construye/shared";
 
-/** Default models available on Workers AI with tool calling support */
-export const WORKERS_AI_MODELS = {
+/** Models available on Workers AI with tool calling support */
+export const WORKERS_AI_MODELS: Record<string, string> = {
+	// Frontier coding — best for SWE tasks
+	"kimi-k2.5": WORKERS_AI_MODEL_MAP.heavy,
+	"kimi": WORKERS_AI_MODEL_MAP.heavy,
+	// Reasoning — dedicated thinking model
+	"qwq": WORKERS_AI_MODEL_MAP.reasoning,
+	"qwq-32b": WORKERS_AI_MODEL_MAP.reasoning,
+	// Fast — tiny MoE for instant responses
+	"qwen3-coder": WORKERS_AI_MODEL_MAP.fast,
+	"fast": WORKERS_AI_MODEL_MAP.fast,
+	// Legacy aliases
 	"qwen-coder": "@cf/qwen/qwen2.5-coder-32b-instruct",
 	"llama-3.3": "@cf/meta/llama-3.3-70b-instruct-fp8-fast",
 	"llama-3.1": "@cf/meta/llama-3.1-70b-instruct",
 	"llama-3.1-8b": "@cf/meta/llama-3.1-8b-instruct",
 	"deepseek-r1": "@cf/deepseek-ai/deepseek-r1-distill-qwen-32b",
-	"hermes-2-pro": "@hf/nousresearch/hermes-2-pro-mistral-7b",
-	"qwen-2.5": "@cf/qwen/qwen2.5-72b-instruct",
 	"gpt-oss-120b": "@cf/openai/gpt-oss-120b",
 };
 
 /** System prompt optimized for Workers AI function calling models */
-const SYSTEM_PROMPT = `You are construye.lat, an expert AI coding agent.
-You have access to tools for filesystem operations and shell commands.
-When the user asks you to do something, use the appropriate tools.
-Always respond concisely. When using tools, call them directly.
-CRITICAL: Detect the language of the user's message and ALWAYS respond in that same language. If the user writes in Spanish, respond in Spanish. If in English, respond in English. Match their language exactly.`;
+const SYSTEM_PROMPT = `You are construye.lat, an expert AI coding agent built to help developers build, debug, and ship software.
+
+CORE BEHAVIORS:
+1. When the user asks you to interact with files, code, or the filesystem — USE TOOLS. Do not describe what you would do.
+2. Be concise. Execute first, explain after. Show results, not intentions.
+3. When you encounter errors, analyze them and try a different approach before asking for help.
+4. For complex tasks, break them into steps and use multiple tools in sequence.
+
+LANGUAGE RULE: Detect the language of each user message and respond in EXACTLY that language. Never default to English.
+
+TOOL USAGE:
+- read_file: Read file contents (use line ranges for large files)
+- write_file: Create/overwrite files
+- edit_file: Surgical string replacement in existing files
+- search_text: grep across project (pattern-based)
+- list_dir: List directory contents
+- glob: Find files by pattern
+- exec: Run shell commands (builds, tests, installs)
+- git: Git operations (status, diff, commit, branch)
+- browse: Fetch web pages for research
+
+IMPORTANT: Only use tools when the user asks for file operations, code changes, or shell commands. For conversational messages, respond directly with text.`;
 
 /**
  * Workers AI provider — hybrid approach:
