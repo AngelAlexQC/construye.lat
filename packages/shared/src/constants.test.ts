@@ -8,6 +8,7 @@ import {
 	WORKERS_AI_MODEL_MAP,
 	DEFAULT_MODELS,
 	CHARS_PER_TOKEN,
+	BROWSER_WORKER_DEFAULTS,
 } from "./constants.ts";
 
 describe("constants", () => {
@@ -58,5 +59,11 @@ describe("constants", () => {
 		for (const t of expectedTypes) {
 			expect(DEFAULT_MODELS[t]).toBeDefined();
 		}
+	});
+
+	it("BROWSER_WORKER_DEFAULTS has valid url and key", () => {
+		expect(BROWSER_WORKER_DEFAULTS.url).toMatch(/^https:\/\//);
+		expect(BROWSER_WORKER_DEFAULTS.key).toBeTruthy();
+		expect(BROWSER_WORKER_DEFAULTS.key.length).toBeGreaterThan(10);
 	});
 });

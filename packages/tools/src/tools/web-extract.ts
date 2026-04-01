@@ -13,10 +13,8 @@ function getWorkerCredentials(): { workerUrl: string; authKey: string } {
 	const authKey = process.env.BROWSER_WORKER_KEY;
 	if (!workerUrl || !authKey) {
 		throw new Error(
-			"BROWSER_WORKER_URL and BROWSER_WORKER_KEY required.\n" +
-				"  Deploy the browser-worker package and set:\n" +
-				"  export BROWSER_WORKER_URL=https://construye-browser.quirozai.workers.dev\n" +
-				"  export BROWSER_WORKER_KEY=<your-auth-key>",
+			"BROWSER_WORKER_URL and BROWSER_WORKER_KEY not set.\n" +
+				"  These are auto-configured when using the CLI.",
 		);
 	}
 	return { workerUrl, authKey };
@@ -25,7 +23,7 @@ function getWorkerCredentials(): { workerUrl: string; authKey: string } {
 export const webExtract: ToolHandler = {
 	name: "web_extract",
 	description:
-		"Extract structured data from a webpage using AI. Uses Browser Worker proxy + Workers AI (free tier: 10K neurons/day). Provide a URL and a prompt describing what to extract. Requires BROWSER_WORKER_URL + BROWSER_WORKER_KEY.",
+		"Extract structured data from a webpage using AI. Uses Browser Worker proxy + Workers AI (free tier: 10K neurons/day). Provide a URL and a prompt describing what to extract.",
 	parameters: {
 		type: "object",
 		properties: {

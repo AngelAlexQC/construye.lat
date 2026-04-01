@@ -158,7 +158,7 @@ async function cfMarkdownFetch(url: string): Promise<string> {
 export const webFetch: ToolHandler = {
 	name: "web_fetch",
 	description:
-		"Fetch a URL and return its content as clean readable text/markdown. Uses Browser Worker proxy (Puppeteer, renders JS) when BROWSER_WORKER_URL + BROWSER_WORKER_KEY are set, otherwise falls back to basic HTML extraction.",
+		"Fetch a URL and return its content as clean readable text/markdown. Uses Browser Worker proxy (Puppeteer, renders JS) by default, with basic HTML extraction as fallback.",
 	parameters: {
 		type: "object",
 		properties: {

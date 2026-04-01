@@ -11,6 +11,7 @@ import { ClaudeProvider, WorkersAIProvider, DemoProvider, WORKERS_AI_MODELS } fr
 import type { ProviderAdapter } from "@construye/providers";
 import { createDefaultRegistry, type ToolContext } from "@construye/tools";
 import type { ToolCall } from "@construye/shared";
+import { BROWSER_WORKER_DEFAULTS } from "@construye/shared";
 import { App } from "./app.tsx";
 import type { AgentSetup } from "./hooks/use-agent.ts";
 
@@ -92,6 +93,14 @@ async function main(): Promise<void> {
 		provider = new DemoProvider();
 		providerName = "demo (no API key)";
 		modelName = "demo";
+	}
+
+	// ── Browser Worker (auto-configure if not set) ────────
+	if (!process.env.BROWSER_WORKER_URL) {
+		process.env.BROWSER_WORKER_URL = BROWSER_WORKER_DEFAULTS.url;
+	}
+	if (!process.env.BROWSER_WORKER_KEY) {
+		process.env.BROWSER_WORKER_KEY = BROWSER_WORKER_DEFAULTS.key;
 	}
 
 	// ── Tool registry ──────────────────────────────────────

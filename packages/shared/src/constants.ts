@@ -43,6 +43,12 @@ export const WORKERS_AI_MODEL_MAP = {
 	general: "@cf/meta/llama-3.3-70b-instruct-fp8-fast",
 } as const;
 
+/** Built-in Browser Worker proxy — deployed at Cloudflare, free tier */
+export const BROWSER_WORKER_DEFAULTS = {
+	url: "https://construye-browser.quirozai.workers.dev",
+	key: "construye-br-3aba0c39976303975e061ac71011a788",
+} as const;
+
 /** Default models per task type — all Workers AI, no external deps */
 export const DEFAULT_MODELS: Record<string, string> = {
 	reasoning: WORKERS_AI_MODEL_MAP.reasoning,

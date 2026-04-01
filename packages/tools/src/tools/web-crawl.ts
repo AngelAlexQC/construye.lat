@@ -106,7 +106,7 @@ function formatResults(pages: PageResult[], maxChars: number): string {
 export const webCrawl: ToolHandler = {
 	name: "web_crawl",
 	description:
-		"Crawl a website and return markdown content from multiple pages. Fetches starting page, discovers same-domain links, then renders each via Browser Worker proxy. Great for researching docs, blogs, and multi-page content. Requires BROWSER_WORKER_URL + BROWSER_WORKER_KEY.",
+		"Crawl a website and return markdown content from multiple pages. Fetches starting page, discovers same-domain links, then renders each via Browser Worker proxy. Great for researching docs, blogs, and multi-page content.",
 	parameters: {
 		type: "object",
 		properties: {
@@ -141,7 +141,7 @@ export const webCrawl: ToolHandler = {
 		const workerUrl = process.env.BROWSER_WORKER_URL;
 		const authKey = process.env.BROWSER_WORKER_KEY;
 		if (!workerUrl || !authKey) {
-			return "[web_crawl] BROWSER_WORKER_URL and BROWSER_WORKER_KEY required.\n  Deploy the browser-worker package and set env vars.";
+			return "[web_crawl] BROWSER_WORKER_URL and BROWSER_WORKER_KEY not set.\n  These are auto-configured when using the CLI.";
 		}
 
 		try {
