@@ -25,5 +25,9 @@
     "typescript": "^5.7.0",
     "vitest": "^3.0.0",
     "wrangler": "^4.79.0"
+  },
+  "dependencies": {
+    "marked": "^17.0.5",
+    "marked-terminal": "^7.3.0"
   }
 }

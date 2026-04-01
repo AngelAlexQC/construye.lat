@@ -11,11 +11,11 @@ export function classifyTask(message: string, history?: Message[]): TaskType {
 	}
 
 	// Reasoning: debugging, architecture, complex analysis, explanations
-	const reasoningPatterns = /\b(debug|why|explain|analiz|architect|design|refactor|optimiz|diagnos|invest?ig|compare|evaluat|trade.?off|root cause|por ?qué|razón)(?!\w)/;
+	const reasoningPatterns = /\b(debug|why|explain|analy[zs]|analiz|architect|refactor|optimiz|diagnos|invest?ig|compare|evaluat|trade.?off|root cause|por ?qué|razón)/;
 	if (reasoningPatterns.test(lower)) return "reasoning";
 
-	// Planning: create plan, break down, steps, strategy
-	const planningPatterns = /\b(plan|steps|break down|how would|approach|strateg|roadmap|diseñ[ao]|implementa|migrat)/;
+	// Planning: create plan, break down, steps, strategy, design flows
+	const planningPatterns = /\b(plan|steps|break down|how would|approach|strateg|roadmap|design|diseñ[ao]|implementa|migrat)/;
 	if (planningPatterns.test(lower)) return "planning";
 
 	// File ops: simple reads, searches, listings

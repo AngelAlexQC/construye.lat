@@ -14,14 +14,45 @@ import {
 	type ToolContext,
 } from "@construye/tools";
 import type { StreamChunk, ToolCall, Message } from "@construye/shared";
+import chalk from "chalk";
+import {
+	banner,
+	assistantHeader,
+	indentedMarkdown,
+	toolCallHeader,
+	toolCallExecuting,
+	toolCallDone,
+	turnMetrics,
+	spinnerFrame,
+	thinkingLine,
+	receivingLine,
+	usageTable,
+	fmtTokens,
+	fmtCost,
+	PROMPT,
+	successMsg,
+	errorMsg,
+	dimMsg,
+	approvalPrompt,
+	approvalResult,
+	autoApproved,
+	goodbye,
+} from "./render.ts";
 
-const CYAN = "\x1b[36m";
-const GREEN = "\x1b[32m";
-const YELLOW = "\x1b[33m";
-const DIM = "\x1b[2m";
-const BOLD = "\x1b[1m";
-const RESET = "\x1b[0m";
-const RED = "\x1b[31m";
+// ── JSON tool-call filter ───────────────────────────────────
+// Some smaller models emit raw JSON tool calls as text. Filter them out.
+const JSON_TOOL_CALL_PATTERNS = [
+	/^\s*\{[\s]*"name"\s*:\s*"[^"]+"\s*,\s*"arguments"\s*:/,
+	/^\s*\{[\s]*"tool_name"\s*:/,
+	/^\s*\{[\s]*"type"\s*:\s*"function"\s*,/,
+	/^\s*```json\s*\n?\s*\{[\s]*"name"\s*:/,
+];
+
+function isRawToolCallJson(text: string): boolean {
+	return JSON_TOOL_CALL_PATTERNS.some(re => re.test(text));
+}
+
+
 
 /** Read wrangler OAuth token from ~/.wrangler/config/default.toml */
 function readWranglerToken(): string | null {
@@ -82,7 +113,7 @@ async function main(): Promise<void> {
 	} else if (config.provider === "workers-ai" || (cfAccountId && cfApiToken && !anthropicKey && !openaiKey)) {
 		// Use Cloudflare Workers AI
 		if (!cfAccountId || !cfApiToken) {
-			console.error(`${RED}  Set CLOUDFLARE_ACCOUNT_ID and CLOUDFLARE_API_TOKEN, or run 'npx wrangler login'.${RESET}`);
+			console.error(chalk.red("  Set CLOUDFLARE_ACCOUNT_ID and CLOUDFLARE_API_TOKEN, or run 'npx wrangler login'."));
 			process.exit(1);
 		}
 		provider = new WorkersAIProvider(cfAccountId, cfApiToken);
@@ -168,22 +199,29 @@ async function main(): Promise<void> {
 	}
 
 	// Print banner
-	console.log(`\n${BOLD}${CYAN}  ╔═══════════════════════════════════════╗${RESET}`);
-	console.log(`${BOLD}${CYAN}  ║   🏗️  construye.lat — AI coding agent  ║${RESET}`);
-	console.log(`${BOLD}${CYAN}  ╚═══════════════════════════════════════╝${RESET}\n`);
-	console.log(`  ${DIM}Provider:${RESET} ${providerName}  ${DIM}Model:${RESET} ${modelName}  ${DIM}Tools:${RESET} ${registry.list().length}`);
-	console.log(`  ${DIM}Dir:${RESET} ${workingDir}`);
-	if (providerName.includes("demo")) {
-		console.log(`\n  ${YELLOW}Running in demo mode. To use real AI:${RESET}`);
-		console.log(`  ${DIM}  Cloudflare: npx wrangler login  (auto-detects credentials)${RESET}`);
-		console.log(`  ${DIM}  or set:     CLOUDFLARE_ACCOUNT_ID + CLOUDFLARE_API_TOKEN${RESET}`);
-		console.log(`  ${DIM}  Anthropic:  ANTHROPIC_API_KEY${RESET}`);
-	}
-	console.log(`\n  ${DIM}Type your request. Ctrl+C to exit.${RESET}\n`);
+	const modeLabel = config.mode === "plan" ? "📋 Plan" : config.mode === "auto" ? "⚡ Auto" : "💬 Interactive";
+	const shortDir = workingDir.replace(os.homedir(), "~");
+	console.log(banner({
+		provider: providerName,
+		model: modelName,
+		modeLabel,
+		tools: registry.list().length,
+		dir: shortDir,
+		isDemo: providerName.includes("demo"),
+	}));
 
 	// Conversation history
 	let history: Message[] = [];
 	let processing = false;
+
+	// ── Tool approval memory (per session) ──────────────────────
+	const approvedTools = new Set<string>();
+
+	// ── Session statistics ─────────────────────────────────────
+	let sessionTokensIn = 0;
+	let sessionTokensOut = 0;
+	let sessionCostCents = 0;
+	let turnCount = 0;
 
 	// Readline REPL
 	const rl = readline.createInterface({
@@ -193,47 +231,63 @@ async function main(): Promise<void> {
 
 	rl.on("close", () => {
 		if (processing) {
-			// Wait for the current request to finish before exiting
 			const check = setInterval(() => {
 				if (!processing) {
 					clearInterval(check);
-					console.log(`\n${DIM}  Bye!${RESET}\n`);
+					console.log(goodbye());
 					process.exit(0);
 				}
 			}, 100);
 		} else {
-			console.log(`\n${DIM}  Bye!${RESET}\n`);
+			console.log(goodbye());
 			process.exit(0);
 		}
 	});
 
 	const prompt = () => {
 		try {
-			rl.question(`${GREEN}❯ ${RESET}`, async (input) => {
+			rl.question(PROMPT, async (input) => {
 				const trimmed = input.trim();
 				if (!trimmed) { prompt(); return; }
 
 				if (trimmed === "/clear") {
 					history = [];
+					approvedTools.clear();
+					sessionTokensIn = 0;
+					sessionTokensOut = 0;
+					sessionCostCents = 0;
+					turnCount = 0;
 					session = createSession("local", "cli-user", modelName);
-					console.log(`${DIM}  History cleared. New session started.${RESET}\n`);
+					console.log(successMsg("Historial limpiado. Nueva sesión.") + "\n");
 					prompt();
 					return;
 				}
 				if (trimmed === "/history") {
-					console.log(`${DIM}  ${history.length} messages in history | Session: ${session.id.slice(0, 8)}${RESET}\n`);
+					console.log(dimMsg(`${history.length} mensajes | Sesión: ${session.id.slice(0, 8)}`) + "\n");
+					prompt();
+					return;
+				}
+				if (trimmed === "/usage") {
+					console.log(usageTable({
+						tokensIn: sessionTokensIn,
+						tokensOut: sessionTokensOut,
+						costCents: sessionCostCents,
+						turns: turnCount,
+						messages: history.length,
+						sessionId: session.id.slice(0, 8),
+					}));
 					prompt();
 					return;
 				}
 				if (trimmed === "/sessions") {
 					const recent = await sessionStore.listRecent(5);
 					if (recent.length === 0) {
-						console.log(`${DIM}  No saved sessions.${RESET}\n`);
+						console.log(dimMsg("No hay sesiones guardadas.") + "\n");
 					} else {
-						console.log(`${DIM}  Recent sessions:${RESET}`);
+						console.log(dimMsg("Sesiones recientes:"));
 						for (const r of recent) {
 							const msgs = (await sessionStore.load(r.id))?.messages.length ?? 0;
-							console.log(`  ${DIM}${r.id.slice(0, 8)}${RESET}  ${msgs} msgs  ${r.session.started_at}`);
+							console.log(`  ${chalk.cyan(r.id.slice(0, 8))}  ${msgs} msgs  ${chalk.dim(r.session.started_at)}`);
 						}
 						console.log();
 					}
@@ -245,7 +299,7 @@ async function main(): Promise<void> {
 					if (!prefix) {
 						const recent = await sessionStore.listRecent(1);
 						if (recent.length === 0) {
-							console.log(`${DIM}  No sessions to resume.${RESET}\n`);
+							console.log(dimMsg("No hay sesiones para reanudar.") + "\n");
 							prompt();
 							return;
 						}
@@ -253,7 +307,8 @@ async function main(): Promise<void> {
 						if (loaded) {
 							session = loaded.session;
 							history = loaded.messages;
-							console.log(`${GREEN}  Resumed session ${session.id.slice(0, 8)} (${history.length} messages)${RESET}\n`);
+							approvedTools.clear();
+							console.log(successMsg(`Sesión ${chalk.cyan(session.id.slice(0, 8))} reanudada (${history.length} mensajes)`) + "\n");
 						}
 					} else {
 						const recent = await sessionStore.listRecent(20);
@@ -263,10 +318,11 @@ async function main(): Promise<void> {
 							if (loaded) {
 								session = loaded.session;
 								history = loaded.messages;
-								console.log(`${GREEN}  Resumed session ${session.id.slice(0, 8)} (${history.length} messages)${RESET}\n`);
+								approvedTools.clear();
+								console.log(successMsg(`Sesión ${chalk.cyan(session.id.slice(0, 8))} reanudada (${history.length} mensajes)`) + "\n");
 							}
 						} else {
-							console.log(`${RED}  No session matching '${prefix}'${RESET}\n`);
+							console.log(errorMsg(`No hay sesión con prefijo '${prefix}'`) + "\n");
 						}
 					}
 					prompt();
@@ -276,20 +332,59 @@ async function main(): Promise<void> {
 				try {
 					processing = true;
 
-					// Spinner while waiting for first token
-					const spinnerFrames = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
 					let spinnerIdx = 0;
-					let gotFirstToken = false;
+					let phase: "thinking" | "receiving" | "toolcall" | "idle" = "thinking";
 					const startTime = Date.now();
-					const spinner = setInterval(() => {
-						if (!gotFirstToken) {
-							const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
-							process.stdout.write(`\r  ${CYAN}${spinnerFrames[spinnerIdx]}${RESET} ${DIM}Thinking... ${elapsed}s${RESET}  `);
-							spinnerIdx = (spinnerIdx + 1) % spinnerFrames.length;
+					let streamBuffer = "";
+					let headerPrinted = false;
+					const spinnerTimer = setInterval(() => {
+						const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+						if (phase === "thinking") {
+							process.stdout.write(thinkingLine(spinnerFrame(spinnerIdx), elapsed));
+						} else if (phase === "receiving") {
+							const words = streamBuffer.split(/\s+/).filter(Boolean).length;
+							process.stdout.write(receivingLine(spinnerFrame(spinnerIdx), words));
 						}
+						spinnerIdx++;
 					}, 80);
 
+					const flushTextBuffer = () => {
+						if (streamBuffer.trim() && !isRawToolCallJson(streamBuffer)) {
+							process.stdout.write("\r\x1b[K"); // clear spinner/receiving line
+							if (!headerPrinted) {
+								process.stdout.write(assistantHeader());
+								headerPrinted = true;
+							}
+							process.stdout.write(indentedMarkdown(streamBuffer) + "\n");
+						}
+						streamBuffer = "";
+					};
+
 					const isOpenAI = providerName.includes("workers-ai") || providerName.includes("openai");
+
+					// Wrap tool executor to display timing and results
+					const displayToolExecutor = {
+						async execute(call: ToolCall) {
+							const t0 = Date.now();
+							process.stdout.write(toolCallExecuting());
+							const result = await toolExecutor.execute(call);
+							const te = ((Date.now() - t0) / 1000).toFixed(1);
+							if (result.is_error) {
+								process.stdout.write("\n" + toolCallDone(false, te));
+							} else {
+								const preview = result.content.length > 80
+									? result.content.slice(0, 77).replace(/\n/g, " ") + "..."
+									: result.content.replace(/\n/g, " ");
+								process.stdout.write("\n" + toolCallDone(true, te, preview));
+							}
+							// Reset for next text block
+							headerPrinted = false;
+							phase = "thinking";
+							return result;
+						},
+						needsApproval: toolExecutor.needsApproval.bind(toolExecutor),
+					};
+
 					const agentConfig = {
 						provider: {
 							chat: (messages: Message[], tools?: unknown[]) => provider.stream(messages, {
@@ -298,7 +393,7 @@ async function main(): Promise<void> {
 								max_tokens: 4096,
 							}, tools),
 						},
-						toolExecutor,
+						toolExecutor: displayToolExecutor,
 						skillLoader,
 						modelConfig: {
 							provider: (isOpenAI ? "workers-ai" : "claude") as "workers-ai" | "claude",
@@ -307,39 +402,82 @@ async function main(): Promise<void> {
 						},
 						onStream: (chunk: StreamChunk) => {
 							if (chunk.type === "text" && chunk.content) {
-								if (!gotFirstToken) {
-									gotFirstToken = true;
-									clearInterval(spinner);
-									// Clear spinner line, start fresh
-									process.stdout.write(`\r\x1b[K`);
+								// Accumulate text in buffer
+								streamBuffer += chunk.content;
+
+								// Filter raw JSON tool calls from smaller models
+								if (isRawToolCallJson(streamBuffer)) {
+									if (streamBuffer.length < 3000) return;
 								}
-								process.stdout.write(chunk.content);
+
+								// Switch to receiving phase on first text
+								if (phase === "thinking") {
+									phase = "receiving";
+								}
 							}
 							if (chunk.type === "tool_call" && chunk.tool_call) {
-								if (!gotFirstToken) {
-									gotFirstToken = true;
-									clearInterval(spinner);
-									process.stdout.write(`\r\x1b[K`);
-								}
-								const args = JSON.stringify(chunk.tool_call.arguments).slice(0, 80);
-								process.stdout.write(`\n  ${YELLOW}⚡ ${chunk.tool_call.name}${DIM}(${args})${RESET}`);
+								// Flush accumulated text before tool call
+								phase = "toolcall";
+								flushTextBuffer();
+
+								const tc = chunk.tool_call;
+								const argsStr = JSON.stringify(tc.arguments);
+								process.stdout.write(toolCallHeader(tc.name, argsStr));
 							}
 							if (chunk.type === "done") {
-								if (!gotFirstToken) {
-									gotFirstToken = true;
-									clearInterval(spinner);
-									process.stdout.write(`\r\x1b[K`);
+								phase = "idle";
+								clearInterval(spinnerTimer);
+
+								// Flush remaining text
+								flushTextBuffer();
+
+								// Capture usage stats
+								const u = chunk.usage;
+								if (u) {
+									sessionTokensIn += u.input_tokens;
+									sessionTokensOut += u.output_tokens;
+									sessionCostCents += u.cost_cents;
 								}
+								turnCount++;
+
+								// Completion metrics
 								const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
-								process.stdout.write(`${RESET}\n  ${DIM}${elapsed}s${RESET}`);
+								process.stdout.write(turnMetrics({
+									elapsed,
+									tokensIn: u?.input_tokens,
+									tokensOut: u?.output_tokens,
+									costCents: u?.cost_cents,
+									turn: turnCount,
+								}));
 							}
 						},
 						onApproval: async (call: ToolCall): Promise<boolean> => {
 							if (config.mode === "auto") return true;
+
+							// Check if already approved for this session
+							if (approvedTools.has(call.name)) {
+								process.stdout.write(autoApproved());
+								return true;
+							}
+
 							return new Promise((resolve) => {
-								rl.question(`\n  ${YELLOW}Allow ${call.name}? [Y/n] ${RESET}`, (answer) => {
-									resolve(answer.trim().toLowerCase() !== "n");
-								});
+								rl.question(
+									approvalPrompt(call.name),
+									(answer) => {
+										const a = answer.trim().toLowerCase();
+										if (a === "n") {
+											process.stdout.write(approvalResult("denied") + "\n");
+											resolve(false);
+										} else if (a === "a" || a === "always" || a === "siempre") {
+											approvedTools.add(call.name);
+											process.stdout.write(approvalResult("always") + "\n");
+											resolve(true);
+										} else {
+											process.stdout.write(approvalResult("approved") + "\n");
+											resolve(true);
+										}
+									},
+								);
 							});
 						},
 						maxTurns: 15,
@@ -352,11 +490,11 @@ async function main(): Promise<void> {
 					// Persist session to disk
 					await sessionStore.save(session.id, { session, messages: history });
 
-					clearInterval(spinner);
-					process.stdout.write(`${RESET}\n\n`);
+					clearInterval(spinnerTimer);
+					process.stdout.write("\n\n");
 				} catch (err: unknown) {
 					const msg = err instanceof Error ? err.message : String(err);
-					console.error(`\n${RED}  Error: ${msg}${RESET}\n`);
+					console.error("\n" + errorMsg(`Error: ${msg}`) + "\n");
 				} finally {
 					processing = false;
 				}
