@@ -1,18 +1,54 @@
 import React from "react";
+import { Box, Text } from "ink";
+import { fmtTokens, fmtCost } from "../render.ts";
+import type { AgentStatus } from "../protocol.ts";
 
 interface Props {
-	inputTokens: number;
-	outputTokens: number;
-	costUsd: number;
-	turnsUsed: number;
+	model: string;
+	provider: string;
+	sessionId: string;
+	tokensIn: number;
+	tokensOut: number;
+	costCents: number;
+	turns: number;
+	status: AgentStatus;
 }
 
-export function StatusBar({ inputTokens, outputTokens, costUsd, turnsUsed }: Props): React.JSX.Element {
-	const tokens = `${(inputTokens / 1000).toFixed(1)}k in / ${(outputTokens / 1000).toFixed(1)}k out`;
-	const cost = `$${costUsd.toFixed(4)}`;
+const STATUS_LABELS: Record<AgentStatus, string> = {
+	idle: "",
+	thinking: "pensando...",
+	streaming: "escribiendo...",
+	"tool-calling": "ejecutando...",
+	"awaiting-approval": "esperando aprobación",
+};
 
-	return React.createElement("Box", { borderStyle: "single", paddingX: 1 },
-		React.createElement("Text", { dimColor: true },
-			`Tokens: ${tokens}  |  Costo: ${cost}  |  Turnos: ${turnsUsed}`),
+export function StatusBar({
+	model,
+	sessionId,
+	tokensIn,
+	tokensOut,
+	costCents,
+	status,
+}: Props): React.JSX.Element {
+	const statusLabel = STATUS_LABELS[status];
+	const hasStats = tokensIn > 0 || tokensOut > 0;
+	const shortModel = model.length > 20 ? `${model.slice(0, 17)}...` : model;
+
+	return (
+		<Box borderStyle="single" borderColor="gray" paddingX={1} justifyContent="space-between">
+			<Box gap={2}>
+				<Text dimColor>{shortModel}</Text>
+				{hasStats && (
+					<Text dimColor>
+						{`${fmtTokens(tokensIn)}→${fmtTokens(tokensOut)}`}
+						{costCents > 0 ? `  ${fmtCost(costCents)}` : ""}
+					</Text>
+				)}
+			</Box>
+			<Box gap={2}>
+				{statusLabel ? <Text color="cyan">{statusLabel}</Text> : null}
+				<Text dimColor>{sessionId.slice(0, 8)}</Text>
+			</Box>
+		</Box>
 	);
 }
