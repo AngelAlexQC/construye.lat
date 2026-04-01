@@ -19,6 +19,8 @@ export { askUser } from "./tools/ask-user.ts";
 export { delegate } from "./tools/delegate.ts";
 export { webSearch } from "./tools/web-search.ts";
 export { webFetch } from "./tools/web-fetch.ts";
+export { webCrawl } from "./tools/web-crawl.ts";
+export { webExtract } from "./tools/web-extract.ts";
 export { projectDetect } from "./tools/project-detect.ts";
 export { taskMemory } from "./tools/task-memory.ts";
 
@@ -40,13 +42,16 @@ import { askUser } from "./tools/ask-user.ts";
 import { delegate } from "./tools/delegate.ts";
 import { webSearch } from "./tools/web-search.ts";
 import { webFetch } from "./tools/web-fetch.ts";
+import { webCrawl } from "./tools/web-crawl.ts";
+import { webExtract } from "./tools/web-extract.ts";
 import { projectDetect } from "./tools/project-detect.ts";
 import { taskMemory } from "./tools/task-memory.ts";
 
 const ALL_TOOLS: ToolHandler[] = [
 	readFile, writeFile, editFile, searchText, searchSemantic,
 	listDir, glob, codeMode, exec, git, preview, browse,
-	askUser, delegate, webSearch, webFetch, projectDetect, taskMemory,
+	askUser, delegate, webSearch, webFetch, webCrawl, webExtract,
+	projectDetect, taskMemory,
 ];
 
 export function createDefaultRegistry(): ToolRegistry {

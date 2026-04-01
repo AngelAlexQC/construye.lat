@@ -186,7 +186,7 @@ describe("benchmark: context-engine", () => {
 			const toolSection = systemContent.split("## Available Tools")[1]?.split("##")[0] ?? "";
 			const toolLines = toolSection.trim().split("\n").filter(l => l.startsWith("- "));
 			expect(toolLines.length).toBe(9);
-			const avgTokensPerTool = estimateMessagesTokens([{ role: "user", content: toolSection }]) / toolLines.length;
+			const avgTokensPerTool = estimateMessagesTokens([{ content: toolSection }]) / toolLines.length;
 			expect(avgTokensPerTool).toBeLessThan(40);
 			console.log(`  → ${toolLines.length} tools, ~${avgTokensPerTool.toFixed(0)} tokens/tool avg`);
 		});

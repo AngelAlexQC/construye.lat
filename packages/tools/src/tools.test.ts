@@ -91,21 +91,33 @@ describe("truncateToTokenBudget", () => {
 
 // ─── web_search tool tests ────────────────────────────
 describe("web_search tool", () => {
-	it("returns error when BRAVE_API_KEY not set", async () => {
+	it("returns helpful message when no API keys set", async () => {
 		const registry = createDefaultRegistry();
 		const tool = registry.get("web_search")!;
 		expect(tool).toBeDefined();
 
-		const origKey = process.env.BRAVE_API_KEY;
+		const saved = {
+			SERPER_API_KEY: process.env.SERPER_API_KEY,
+			BRAVE_API_KEY: process.env.BRAVE_API_KEY,
+			TAVILY_API_KEY: process.env.TAVILY_API_KEY,
+		};
+		delete process.env.SERPER_API_KEY;
 		delete process.env.BRAVE_API_KEY;
+		delete process.env.TAVILY_API_KEY;
 
 		const result = await tool.execute(
 			{ query: "test" },
 			{ workingDir: "/tmp", sessionId: "test", projectId: "test" },
 		);
-		expect(result).toContain("BRAVE_API_KEY not set");
+		expect(result).toContain("No search API key configured");
+		expect(result).toContain("SERPER_API_KEY");
+		expect(result).toContain("BRAVE_API_KEY");
+		expect(result).toContain("TAVILY_API_KEY");
 
-		if (origKey) process.env.BRAVE_API_KEY = origKey;
+		// Restore
+		for (const [k, v] of Object.entries(saved)) {
+			if (v) process.env[k] = v;
+		}
 	});
 
 	it("has correct parameter schema", () => {
@@ -115,6 +127,7 @@ describe("web_search tool", () => {
 		expect(params.properties).toHaveProperty("query");
 		expect(params.properties).toHaveProperty("max_results");
 		expect(params.properties).toHaveProperty("format");
+		expect(params.properties).toHaveProperty("provider");
 	});
 });
 
@@ -153,6 +166,13 @@ describe("web_fetch tool", () => {
 		);
 		expect(result).toContain("Only HTTP/HTTPS");
 	});
+
+	it("has method parameter in schema", () => {
+		const registry = createDefaultRegistry();
+		const tool = registry.get("web_fetch")!;
+		const params = tool.parameters as { properties: Record<string, unknown> };
+		expect(params.properties).toHaveProperty("method");
+	});
 });
 
 // ─── browse tool tests ────────────────────────────────
@@ -167,6 +187,110 @@ describe("browse tool (updated)", () => {
 			{ workingDir: "/tmp", sessionId: "test", projectId: "test" },
 		);
 		expect(result).toContain("Browser Rendering API");
+	});
+});
+
+// ─── web_crawl tool tests ─────────────────────────────
+describe("web_crawl tool", () => {
+	it("requires Worker credentials", async () => {
+		const registry = createDefaultRegistry();
+		const tool = registry.get("web_crawl")!;
+		expect(tool).toBeDefined();
+
+		const saved = {
+			BROWSER_WORKER_URL: process.env.BROWSER_WORKER_URL,
+			BROWSER_WORKER_KEY: process.env.BROWSER_WORKER_KEY,
+		};
+		delete process.env.BROWSER_WORKER_URL;
+		delete process.env.BROWSER_WORKER_KEY;
+
+		const result = await tool.execute(
+			{ url: "https://example.com" },
+			{ workingDir: "/tmp", sessionId: "test", projectId: "test" },
+		);
+		expect(result).toContain("BROWSER_WORKER_URL");
+		expect(result).toContain("BROWSER_WORKER_KEY");
+
+		for (const [k, v] of Object.entries(saved)) {
+			if (v) process.env[k] = v;
+		}
+	});
+
+	it("rejects invalid URLs", async () => {
+		const registry = createDefaultRegistry();
+		const tool = registry.get("web_crawl")!;
+
+		const result = await tool.execute(
+			{ url: "not-a-url" },
+			{ workingDir: "/tmp", sessionId: "test", projectId: "test" },
+		);
+		expect(result).toContain("Invalid URL");
+	});
+
+	it("rejects non-http protocols", async () => {
+		const registry = createDefaultRegistry();
+		const tool = registry.get("web_crawl")!;
+
+		const result = await tool.execute(
+			{ url: "ftp://evil.com" },
+			{ workingDir: "/tmp", sessionId: "test", projectId: "test" },
+		);
+		expect(result).toContain("Only HTTP/HTTPS");
+	});
+
+	it("has correct parameter schema", () => {
+		const registry = createDefaultRegistry();
+		const tool = registry.get("web_crawl")!;
+		const params = tool.parameters as { properties: Record<string, unknown> };
+		expect(params.properties).toHaveProperty("url");
+		expect(params.properties).toHaveProperty("limit");
+	});
+});
+
+// ─── web_extract tool tests ───────────────────────────
+describe("web_extract tool", () => {
+	it("requires Worker credentials", async () => {
+		const registry = createDefaultRegistry();
+		const tool = registry.get("web_extract")!;
+		expect(tool).toBeDefined();
+
+		const saved = {
+			BROWSER_WORKER_URL: process.env.BROWSER_WORKER_URL,
+			BROWSER_WORKER_KEY: process.env.BROWSER_WORKER_KEY,
+		};
+		delete process.env.BROWSER_WORKER_URL;
+		delete process.env.BROWSER_WORKER_KEY;
+
+		const result = await tool.execute(
+			{ url: "https://example.com", prompt: "Extract title" },
+			{ workingDir: "/tmp", sessionId: "test", projectId: "test" },
+		);
+		expect(result).toContain("BROWSER_WORKER_URL");
+		expect(result).toContain("BROWSER_WORKER_KEY");
+
+		for (const [k, v] of Object.entries(saved)) {
+			if (v) process.env[k] = v;
+		}
+	});
+
+	it("rejects invalid URLs", async () => {
+		const registry = createDefaultRegistry();
+		const tool = registry.get("web_extract")!;
+
+		const result = await tool.execute(
+			{ url: "not-a-url", prompt: "Extract data" },
+			{ workingDir: "/tmp", sessionId: "test", projectId: "test" },
+		);
+		expect(result).toContain("Invalid URL");
+	});
+
+	it("has correct parameter schema", () => {
+		const registry = createDefaultRegistry();
+		const tool = registry.get("web_extract")!;
+		const params = tool.parameters as { properties: Record<string, unknown> };
+		expect(params.properties).toHaveProperty("url");
+		expect(params.properties).toHaveProperty("prompt");
+		expect(params.properties).toHaveProperty("response_format");
 	});
 });
 
@@ -307,10 +431,10 @@ describe("task_memory (scratchpad)", () => {
 
 // ─── Registry: all tools registered ───────────────────
 describe("createDefaultRegistry includes new tools", () => {
-	it("registers 18 tools total", () => {
+	it("registers 20 tools total", () => {
 		const registry = createDefaultRegistry();
 		const tools = registry.list();
-		expect(tools.length).toBe(18);
+		expect(tools.length).toBe(20);
 	});
 
 	it("includes web_search", () => {
@@ -331,5 +455,15 @@ describe("createDefaultRegistry includes new tools", () => {
 	it("includes task_memory", () => {
 		const registry = createDefaultRegistry();
 		expect(registry.get("task_memory")).toBeDefined();
+	});
+
+	it("includes web_crawl", () => {
+		const registry = createDefaultRegistry();
+		expect(registry.get("web_crawl")).toBeDefined();
+	});
+
+	it("includes web_extract", () => {
+		const registry = createDefaultRegistry();
+		expect(registry.get("web_extract")).toBeDefined();
 	});
 });

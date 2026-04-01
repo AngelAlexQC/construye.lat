@@ -2,25 +2,47 @@ import type { ToolHandler } from "../types.ts";
 
 /**
  * Fetch a specific URL and return its content as clean text/markdown.
- * Uses native fetch + lightweight HTML → text conversion.
- * No external dependencies required.
+ *
+ * Primary: Cloudflare Browser Rendering /markdown endpoint (FREE 10 min/day)
+ *   → Renders JavaScript, strips nav/sidebar, returns clean Markdown
+ *   → Requires CF_API_TOKEN + CF_ACCOUNT_ID
+ *
+ * Fallback: native fetch + lightweight HTML → text conversion (zero-dep)
  */
 
 const DEFAULT_TOKEN_BUDGET = 8000;
 const CHARS_PER_TOKEN = 4;
 
 /**
+ * Extract the most relevant content area from HTML.
+ * Prefers <main> or <article> over full document to skip nav/sidebar noise.
+ */
+function extractContentArea(html: string): string {
+	// Try <main> first, then <article>
+	for (const tag of ["main", "article"]) {
+		const re = new RegExp(`<${tag}\\b[^>]*>([\\s\\S]*?)<\\/${tag}>`, "i");
+		const m = html.match(re);
+		if (m && m[1].length > 200) return m[1];
+	}
+	// Fallback: try role="main"
+	const roleMain = html.match(/<[^>]+role=["']main["'][^>]*>([\s\S]*?)<\/\w+>/i);
+	if (roleMain && roleMain[1].length > 200) return roleMain[1];
+	return html;
+}
+
+/**
  * Strip HTML tags and extract readable text content.
  * Lightweight alternative to Turndown — zero dependencies.
  */
 export function htmlToText(html: string): string {
-	let text = html;
+	// Focus on main content area when available
+	let text = extractContentArea(html);
 
-	// Remove script, style, nav, footer, header blocks entirely
-	text = text.replace(/<(script|style|nav|footer|header|noscript|svg)\b[^>]*>[\s\S]*?<\/\1>/gi, "");
+	// Remove script, style, nav, footer, header, aside blocks entirely
+	text = text.replace(/<(script|style|nav|footer|header|aside|noscript|svg)\b[^>]*>[\s\S]*?<\/\1>/gi, "");
 
 	// Convert common block elements to newlines
-	text = text.replace(/<\/?(p|div|section|article|aside|main|br|hr|li|tr|blockquote)\b[^>]*>/gi, "\n");
+	text = text.replace(/<\/?(p|div|section|article|main|br|hr|li|tr|blockquote)\b[^>]*>/gi, "\n");
 
 	// Convert headers to markdown-style
 	text = text.replace(/<h([1-6])\b[^>]*>([\s\S]*?)<\/h\1>/gi, (_m, level, content) => {
@@ -61,6 +83,7 @@ export function htmlToText(html: string): string {
 		.replace(/&quot;/g, '"')
 		.replace(/&#39;/g, "'")
 		.replace(/&nbsp;/g, " ")
+		.replace(/&#x([0-9a-fA-F]+);/g, (_m, hex) => String.fromCharCode(parseInt(hex, 16)))
 		.replace(/&#(\d+);/g, (_m, code) => String.fromCharCode(Number(code)));
 
 	// Clean up whitespace: collapse multiple blank lines, trim lines
@@ -86,10 +109,56 @@ export function truncateToTokenBudget(
 	return text.slice(0, maxChars) + "\n\n... [truncated to ~" + maxTokens + " tokens]";
 }
 
+// ─── Cloudflare Browser Rendering ───────────────────────────────────────────
+
+/**
+ * Check if Browser Worker proxy credentials are available.
+ */
+export function hasCfBrowserRendering(): boolean {
+	return !!(process.env.BROWSER_WORKER_URL && process.env.BROWSER_WORKER_KEY);
+}
+
+/**
+ * Fetch URL via Browser Worker proxy /markdown endpoint.
+ * Returns clean Markdown with JS rendered and nav/sidebar stripped.
+ * Uses deployed Puppeteer Worker — FREE: 10 min browser time/day.
+ */
+async function cfMarkdownFetch(url: string): Promise<string> {
+	const workerUrl = process.env.BROWSER_WORKER_URL;
+	const authKey = process.env.BROWSER_WORKER_KEY;
+	if (!workerUrl || !authKey) throw new Error("BROWSER_WORKER_URL or BROWSER_WORKER_KEY not set");
+
+	const endpoint = `${workerUrl}/markdown`;
+
+	const res = await fetch(endpoint, {
+		method: "POST",
+		headers: {
+			"X-Auth-Key": authKey,
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify({ url }),
+		signal: AbortSignal.timeout(45_000),
+	});
+
+	if (!res.ok) {
+		const body = await res.text().catch(() => "");
+		throw new Error(`Browser Worker ${res.status}: ${body.slice(0, 200)}`);
+	}
+
+	const data = await res.json() as { success: boolean; result?: string; error?: string };
+	if (!data.success || !data.result) {
+		throw new Error(`Browser Worker: ${data.error ?? "empty result"}`);
+	}
+
+	return data.result;
+}
+
+// ─── Tool handler ───────────────────────────────────────────────────────────
+
 export const webFetch: ToolHandler = {
 	name: "web_fetch",
 	description:
-		"Fetch a specific URL and return its content as clean readable text. Use when you have a URL and need its full content.",
+		"Fetch a URL and return its content as clean readable text/markdown. Uses Browser Worker proxy (Puppeteer, renders JS) when BROWSER_WORKER_URL + BROWSER_WORKER_KEY are set, otherwise falls back to basic HTML extraction.",
 	parameters: {
 		type: "object",
 		properties: {
@@ -105,6 +174,11 @@ export const webFetch: ToolHandler = {
 				type: "number",
 				description: "Maximum tokens in response (default 8000)",
 			},
+			method: {
+				type: "string",
+				enum: ["auto", "cloudflare", "basic"],
+				description: "Extraction method: auto (CF if available, else basic), cloudflare (force CF), basic (force local HTML parsing). Default: auto",
+			},
 		},
 		required: ["url"],
 	},
@@ -113,6 +187,7 @@ export const webFetch: ToolHandler = {
 	async execute(args) {
 		const url = args.url as string;
 		const maxTokens = (args.max_tokens as number) ?? DEFAULT_TOKEN_BUDGET;
+		const method = (args.method as string) ?? "auto";
 
 		// Validate URL
 		let parsedUrl: URL;
@@ -127,6 +202,22 @@ export const webFetch: ToolHandler = {
 			return `[web_fetch] Only HTTP/HTTPS URLs are supported`;
 		}
 
+		// Try Cloudflare Browser Rendering first (auto or explicit)
+		const useCf = method === "cloudflare" || (method === "auto" && hasCfBrowserRendering());
+		if (useCf) {
+			try {
+				const markdown = await cfMarkdownFetch(url);
+				return truncateToTokenBudget(markdown, maxTokens);
+			} catch (err) {
+				const msg = err instanceof Error ? err.message : String(err);
+				if (method === "cloudflare") {
+					return `[web_fetch] Cloudflare Browser Rendering error: ${msg}`;
+				}
+				// auto mode: fall through to basic
+			}
+		}
+
+		// Fallback: basic fetch + htmlToText
 		try {
 			const res = await fetch(url, {
 				headers: {
@@ -148,14 +239,12 @@ export const webFetch: ToolHandler = {
 			if (contentType.includes("text/plain") || contentType.includes("text/markdown")) {
 				text = body;
 			} else if (contentType.includes("application/json")) {
-				// Pretty-print JSON
 				try {
 					text = JSON.stringify(JSON.parse(body), null, 2);
 				} catch {
 					text = body;
 				}
 			} else {
-				// HTML → clean text
 				text = htmlToText(body);
 			}
 

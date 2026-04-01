@@ -16,6 +16,7 @@ const SEARCHABLE_EXTS = new Set([
 const IGNORE_DIRS = new Set([
 	"node_modules", ".git", "dist", ".turbo", "coverage",
 	".next", ".output", ".wrangler", "__pycache__",
+	".agents", ".copilot", ".vscode",
 ]);
 
 const MAX_FILE_SIZE = 100_000; // 100KB
