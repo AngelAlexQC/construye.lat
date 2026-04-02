@@ -1,23 +1,32 @@
 {
-	"name": "@construye/cli",
+	"name": "construye",
 	"version": "0.1.0",
-	"private": true,
+	"description": "AI coding agent powered by Cloudflare — open source CLI",
 	"type": "module",
-	"bin": {
-		"construye": "src/index.ts"
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/construye-lat/construye",
+		"directory": "packages/cli"
 	},
-	"main": "src/index.ts",
+	"homepage": "https://construye.lat",
+	"keywords": ["ai", "coding-agent", "cloudflare", "cli", "llm", "developer-tools"],
+	"bin": {
+		"construye": "dist/index.js"
+	},
+	"main": "dist/index.js",
+	"files": ["dist", "README.md"],
+	"engines": {
+		"node": ">=22"
+	},
 	"scripts": {
+		"build": "tsup",
 		"dev": "tsx src/index.ts",
 		"typecheck": "tsc --noEmit",
-		"test": "vitest run"
+		"test": "vitest run",
+		"prepublishOnly": "pnpm build"
 	},
 	"dependencies": {
-		"@construye/core": "workspace:*",
-		"@construye/providers": "workspace:*",
-		"@construye/shared": "workspace:*",
-		"@construye/skills": "workspace:*",
-		"@construye/tools": "workspace:*",
 		"chalk": "^5.6.2",
 		"cli-highlight": "^2.1.11",
 		"ink": "^5.1.0",
@@ -26,8 +35,14 @@
 		"react": "^18.3.1"
 	},
 	"devDependencies": {
+		"@construye/core": "workspace:*",
+		"@construye/providers": "workspace:*",
+		"@construye/shared": "workspace:*",
+		"@construye/skills": "workspace:*",
+		"@construye/tools": "workspace:*",
 		"@types/react": "^18.3.28",
 		"ink-testing-library": "^4.0.0",
+		"tsup": "^8.5.1",
 		"tsx": "^4.21.0"
 	}
 }
