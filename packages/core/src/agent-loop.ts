@@ -51,6 +51,7 @@ export async function runAgentLoop(
 ): Promise<Message[]> {
 	const messages = [...history];
 	const maxTurns = config.maxTurns ?? MAX_AGENT_TURNS;
+	const recentToolCalls: ToolCallRecord[] = [];
 
 	// Add user message
 	messages.push({ role: "user", content: userMessage });
