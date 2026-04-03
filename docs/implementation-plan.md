@@ -1,7 +1,50 @@
 # Plan de Implementación — construye.lat
 
-> Última actualización: julio 2025
-> Versión: 0.2.1
+> Última actualización: 2 abril 2026
+> Versión: 0.3.0
+
+---
+
+## ESTADO ACTUAL — Resumen Ejecutivo
+
+```
+Progreso total: ████████████░░░░░░░░ 44.2%
+
+✅ Fase 0: Foundation               — COMPLETADA
+⬜ Fase 1: Code Mode + Sandbox     — NO INICIADA
+⬜ Fase 2: Smart Routing + Thinking — NO INICIADA
+⬜ Fase 3: MCP Bilateral           — NO INICIADA
+✅ Fase 4: Cloud Deployment         — COMPLETADA
+⬜ Fase 5: Skills + RAG + Agentes  — NO INICIADA
+✅ Fase 6: Web Dashboard            — COMPLETADA
+⬜ Fase 7: Landing + Distribución  — SIGUIENTE ← 🎯
+```
+
+### Lo que funciona HOY (2 abril 2026)
+
+| Componente | Estado | URL |
+|---|---|---|
+| Worker API (DO + streaming) | ✅ Live | `https://construye-worker.quirozai.workers.dev` |
+| Web Dashboard (chat) | ✅ Live | `https://construye-web.pages.dev` |
+| Browser Worker (Puppeteer) | ✅ Live | `https://construye-browser.quirozai.workers.dev` |
+| CLI (React Ink) | ✅ Funcional | `pnpm --filter @construye/cli dev` |
+| GitHub OAuth | ✅ Real creds | Redirect funcional |
+| 243 tests | ✅ Pasando | 16 archivos, 0 fallas |
+| 18 herramientas | ✅ Registry | Incluyendo web_fetch, web_crawl |
+| Smart model routing | ✅ 100% accuracy | 28/28 EN+ES |
+
+### Lo que sigue (priorizado)
+
+| # | Tarea | Impacto | Esfuerzo |
+|---|---|---|---|
+| 1 | **Landing page marketing** | Alto — sin ella no hay distribución | 8h |
+| 2 | **npm publish (`npx construye`)** | Alto — canal de instalación #1 | 4h |
+| 3 | **Extended thinking (QwQ-32B)** | Medio — mejora calidad de razonamiento | 4h |
+| 4 | **BYOK providers (Claude/OpenAI)** | Medio — desbloquea usuarios con API keys | 4h |
+| 5 | **MCP client** | Medio — consume tools externos | 8h |
+| 6 | **Code Mode** | Alto — 99% token savings | 12h |
+| 7 | **RAG con Vectorize** | Medio — busqueda semántica | 8h |
+| 8 | **Sub-agentes** | Bajo — diferenciador futuro | 16h |
 
 ---
 
@@ -133,11 +176,10 @@ Cursor creció 35% en 9 meses. 95% de devs usan IA al menos semanalmente.
 
 ### Métricas Fase 0
 - **Typecheck**: 10/10 paquetes, 0 errores, 3.2s
-- **Tests**: 114/114 pasando, 9 archivos, 950ms
+- **Tests**: 243/243 pasando, 16 archivos, 9.4s
 - **Benchmarks**: 53/53 pasando (modelo, context, sessions, tokens, costos)
-- **Archivos modificados**: 11 (shared, core, tools, providers, cli)
-- **Archivos de test**: 9 creados (incluye benchmark suite)
-- **Bugs corregidos**: regex `\b` con acentos, token counter overhead, test expectations
+- **Archivos de test**: 16 creados (incluye benchmark suite + real-world tests)
+- **Deploy**: Worker + Web + Browser Worker en Cloudflare ✅
 
 ### Resultados del Benchmark Suite
 
@@ -180,7 +222,7 @@ Cursor creció 35% en 9 meses. 95% de devs usan IA al menos semanalmente.
 |---|---|---|
 | Agent Loop (streaming) | 8/10 | ✅ |
 | Multi-model routing | 7/10 | ✅ |
-| Tool system (14 tools) | 7/10 | ✅ |
+| Tool system (18 tools) | 8/10 | ✅ |
 | Context engine | 6/10 | ✅ |
 | Compaction | 6/10 | ✅ |
 | Session persistence | 7/10 | ✅ |
@@ -188,15 +230,21 @@ Cursor creció 35% en 9 meses. 95% de devs usan IA al menos semanalmente.
 | Git integration | 5/10 | ✅ |
 | Loop detection | 5/10 | ✅ |
 | Post-edit verification | 3/10 | ⚠️ Parcial |
+| Cloud execution (DO) | 7/10 | ✅ Streaming + WebSocket |
+| Auth (GitHub OAuth + JWT) | 8/10 | ✅ Real creds |
+| Rate limiting | 7/10 | ✅ Token bucket |
+| Web Dashboard | 5/10 | ✅ Chat funcional |
+| Browser Worker | 6/10 | ✅ Puppeteer + AI |
+| CLI | 9/10 | ✅ React Ink polished |
 | Code Mode / batching | 0/10 | 📋 Planned |
 | RAG / codebase indexing | 0/10 | 📋 Planned |
 | Sub-agents | 0/10 | 📋 Planned |
 | MCP support | 0/10 | 📋 Planned |
 | Extended thinking | 0/10 | 📋 Planned |
-| Web UI | 0/10 | ❌ Missing |
-| Cloud execution (DO) | 0/10 | ❌ Missing |
-| Skills (real loading) | 2/10 | ⚠️ Parcial |
-| **TOTAL** | **62/180 (34.4%)** | |
+| Skills (real loading) | 3/10 | ⚠️ Infrastructure only |
+| Landing page | 0/10 | 📋 Planned |
+| npm distribution | 0/10 | 📋 Planned |
+| **TOTAL** | **106/240 (44.2%)** | ⬆️ de 34.4% |
 
 ---
 
@@ -286,17 +334,56 @@ Cursor creció 35% en 9 meses. 95% de devs usan IA al menos semanalmente.
 
 ---
 
-## Fase 4: Cloud Deployment + Storage (Semana 7-8)
+## Fase 4: Cloud Deployment + Storage ✅ COMPLETADA
 
-> Objetivo: `construye.lat` funciona como servicio cloud
+> Desplegado y verificado el 2 de abril 2026
 
-### 4.1 Worker + Durable Object
-- [ ] Worker entry point con routing (API + WebSocket + MCP)
-- [ ] Durable Object con Agent SDK para sesiones persistentes
-- [ ] WebSocket handshake para CLI y web clients
-- [ ] Scheduled tasks para background jobs (compaction, indexing)
-- [ ] Rate limiting por tier con algoritmo sliding window
-- [ ] Tests: WebSocket protocol, session lifecycle
+### 4.1 Worker + Durable Object ✅
+- [x] Worker entry point con routing (API + WebSocket)
+- [x] Durable Object con streaming via Workers AI (SSE → WebSocket)
+- [x] WebSocket handshake con token auth (header + query param)
+- [x] System prompt completo con detección de idioma
+- [x] Rate limiting por usuario con token bucket
+- [x] Cancel support (interrumpir streaming mid-response)
+- [x] Session CRUD (create, list, get, delete) vía REST API
+- [x] Health endpoint (`/health`)
+- [x] Deploy: `https://construye-worker.quirozai.workers.dev`
+
+### 4.2 Storage Layer ✅
+- [x] D1 schema migrado (users, sessions, projects)
+- [x] D1 database creada: `b5a429de-8690-4e96-9e52-2b2d2484af8b` (ENAM)
+- [x] KV namespace creada: `9ca90e70e31144a5ba6d0dc86c6bf2d0`
+- [x] DO storage para historial de mensajes (last 100)
+- [x] Token usage tracking en D1
+- [ ] R2 para archivos grandes (snapshots, logs) — post-MVP
+- [ ] Vectorize para RAG (embeddings) — post-MVP
+- [ ] Queue para tareas async — post-MVP
+
+### 4.3 Auth + OAuth ✅
+- [x] GitHub OAuth flow completo con real credentials
+- [x] JWT con crypto.subtle (HMAC-SHA256 sign + verify)
+- [x] OAuth redirect configurable via `redirect_uri` param
+- [x] WebSocket auth vía query param (browsers) y header (CLI)
+- [x] Secrets configurados: `JWT_SECRET`, `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`
+- [ ] Stripe integration para subscripciones — post-MVP
+
+### 4.4 Browser Worker ✅
+- [x] Puppeteer proxy con @cloudflare/puppeteer
+- [x] `/markdown` endpoint — web → markdown conversion
+- [x] `/json` endpoint — web → structured data via Workers AI
+- [x] SSRF protection (blocked hosts, IP ranges)
+- [x] Auth via X-Auth-Key con timing-safe comparison
+- [x] Deploy: `https://construye-browser.quirozai.workers.dev`
+
+### 4.5 Web Dashboard ✅
+- [x] React 19 + Vite 6 + Tailwind CSS 4
+- [x] Login con GitHub OAuth
+- [x] Session list + create/delete
+- [x] Chat UI con streaming de respuestas en tiempo real
+- [x] Concatenación de chunks incrementales
+- [x] Connection status indicator
+- [x] Mobile responsive
+- [x] Deploy: `https://construye-web.pages.dev`
 
 ### 4.2 Storage Layer
 - [ ] D1 schema migrado (users, sessions, projects, messages)
@@ -343,27 +430,64 @@ Cursor creció 35% en 9 meses. 95% de devs usan IA al menos semanalmente.
 
 ---
 
-## Fase 6: Web Dashboard + Experiencia (Semana 11-12)
+## Fase 6: Web Dashboard + Experiencia ✅ COMPLETADA
 
-> Objetivo: construye.lat funcional como producto web
+> Completada como parte de Fase 4. Dashboard funcional con chat streaming.
 
-### 6.1 Landing + Auth
-- [ ] Marketing page en construye.lat (React + Vite + CF Pages)
-- [ ] Login con GitHub OAuth
-- [ ] Dashboard de proyectos
+### 6.1 Landing + Auth ✅
+- [x] Login con GitHub OAuth (real credentials)
+- [x] Dashboard de sesiones con create/list/delete
+- [ ] Landing page marketing (construye.lat) — **Fase 7**
 
-### 6.2 Session UI
-- [ ] Chat interface con WebSocket al Durable Object
-- [ ] Streaming de respuestas en tiempo real
-- [ ] File diff viewer (Monaco-based)
-- [ ] Cost tracker visible por sesión
-- [ ] Mobile responsive
+### 6.2 Session UI ✅
+- [x] Chat interface con WebSocket al Durable Object
+- [x] Streaming de respuestas con chunks incrementales
+- [x] Status indicators (thinking, connected, disconnected)
+- [x] Cancel support
+- [ ] File diff viewer (Monaco-based) — post-MVP
+- [ ] Cost tracker visible por sesión — post-MVP
 
 ### 6.3 Developer Experience
 - [ ] `construye init` — configurar proyecto (.construye/)
 - [ ] `construye login` — autenticar con construye.lat
 - [ ] `construye sync` — sincronizar sesiones local ↔ cloud
-- [ ] Autocomplete de comandos en terminal
+
+---
+
+## Fase 7: Landing Page + Distribución npm 🎯 SIGUIENTE
+
+> Objetivo: Que alguien pueda instalar y usar construye.lat en 60 segundos
+
+### 7.1 Landing Page Marketing
+- [ ] Page en construye.lat con hero, features, comparativa, pricing
+- [ ] Terminal animado mostrando `npx construye` en acción
+- [ ] Estética LATAM: paleta cálida (terracota, concreto, verde selva)
+- [ ] Responsive mobile-first, Lighthouse 95+
+- [ ] Deploy en CF Pages con custom domain
+
+### 7.2 npm Distribution
+- [ ] `npm i -g construye` publicado y funcional
+- [ ] `npx construye` zero-install experience
+- [ ] Binary wrapper con esbuild bundle
+- [ ] GitHub Actions para CI (lint + typecheck + test + publish)
+
+### 7.3 BYOK Providers
+- [ ] `construye --provider claude --api-key sk-...`
+- [ ] `construye --provider openai --api-key sk-...`
+- [ ] Config en `~/.construye/config.json`
+- [ ] Fallback a Workers AI cuando no hay API key
+
+### 7.4 Extended Thinking
+- [ ] QwQ-32B para tareas de reasoning
+- [ ] Parsear `<think>...</think>` tags del output
+- [ ] Mostrar thinking como sección colapsable en CLI y web
+- [ ] Activar solo para: debugging, architecture, refactoring
+
+### 7.5 Presencia Online
+- [ ] GitHub README con GIF demo animado
+- [ ] Discord server construye.lat
+- [ ] Blog post inaugural en construye.lat/blog
+- [ ] Post en comunidades LATAM (Reddit, Dev.to)
 
 ---
 
@@ -395,7 +519,7 @@ Cursor creció 35% en 9 meses. 95% de devs usan IA al menos semanalmente.
 | Métrica | Target | Actual |
 |---|---|---|
 | Typecheck | 0 errores | ✅ 0 errores (10/10 pkgs) |
-| Tests | >100 tests | ✅ 114 tests, 9 archivos |
+| Tests | >200 tests | ✅ 243 tests, 16 archivos |
 | Benchmark suite | 100% pass | ✅ 53/53 passing |
 | Token savings (Code Mode) | >90% reducción | 📋 Pendiente Fase 1 |
 | Latencia (fast model) | <1s p50 | 📋 Pendiente |
@@ -405,6 +529,20 @@ Cursor creció 35% en 9 meses. 95% de devs usan IA al menos semanalmente.
 | System prompt overhead | <1% de context | ✅ 0.27% (Kimi K2.5) |
 | Session I/O | <50ms save/load | ✅ 2.6ms / 0.9ms |
 | Costo/sesión vs Claude | >80% ahorro | ✅ 91.6% ahorro |
+| Health endpoint | 200 OK | ✅ `{"status":"ok","version":"0.2.0"}` |
+| OAuth flow | 302 redirect | ✅ Redirect a GitHub con real client_id |
+| WebSocket streaming | Chunks incrementales | ✅ SSE → WebSocket relay |
+| Web dashboard | Funcional | ✅ Chat + sessions + auth |
+| Browser Worker | 2 endpoints | ✅ /markdown + /json |
+
+### Infraestructura Desplegada
+| Recurso | URL/ID | Estado |
+|---|---|---|
+| Worker API | `https://construye-worker.quirozai.workers.dev` | ✅ Live |
+| Web Dashboard | `https://construye-web.pages.dev` | ✅ Live |
+| Browser Worker | `https://construye-browser.quirozai.workers.dev` | ✅ Live |
+| D1 Database | `b5a429de-8690-4e96-9e52-2b2d2484af8b` | ✅ Migrated |
+| KV Namespace | `9ca90e70e31144a5ba6d0dc86c6bf2d0` | ✅ Created |
 
 ### Producto
 | Métrica | Target |
