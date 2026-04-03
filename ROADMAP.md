@@ -1,6 +1,13 @@
 # construye.lat — Roadmap
 
-## M0: Ship the CLI (Month 0–1)
+> Última actualización: 7 de Abril 2026
+> Stack: Turborepo + Cloudflare Workers + D1 + KV + R2 + Hono v4
+> Pago: **Stripe** (primario) + **PayPhone** (LATAM opcional) — `@quirozai/payphone`
+> Dominio: construye.lat
+
+---
+
+## M0: Ship the CLI (Abr 7 → May 18, 2026)
 
 **Goal:** `npx construye` works for any developer. First external users.
 
@@ -31,7 +38,7 @@
 
 ---
 
-## M1: Deploy the Platform (Month 2–3)
+## M1: Deploy the Platform (May 19 → Jul 13, 2026)
 
 **Goal:** SaaS backend running, Skills system functional.
 
@@ -66,7 +73,7 @@
 
 ---
 
-## M2: Billing & Growth (Month 4–6)
+## M2: Billing & Growth (Jul 14 → Oct 2026)
 
 **Goal:** First paying customers, landing page live.
 
