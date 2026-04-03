@@ -60,14 +60,13 @@ Options:
   -h, --help              Show help
 
 Workers AI Models (free/cheap on Cloudflare):
-  llama-3.3              Meta Llama 3.3 70B (fast, best default)
-  llama-3.1              Meta Llama 3.1 70B
-  llama-3.1-8b           Meta Llama 3.1 8B (fastest, cheapest)
-  qwen-coder             Qwen 2.5 Coder 32B (best for code)
-  qwen-2.5               Qwen 2.5 72B (powerful general)
+  kimi-k2.5              Moonshot Kimi K2.5 (best for coding)
+  qwq-32b                Qwen QwQ 32B (reasoning/thinking)
+  fast                   Qwen3 30B MoE (instant responses)
+  llama-3.3              Meta Llama 3.3 70B (general purpose)
+  qwen-coder             Qwen 2.5 Coder 32B (legacy)
   deepseek-r1            DeepSeek R1 distilled (reasoning)
   gpt-oss-120b           OpenAI GPT-OSS 120B
-  hermes-2-pro           Hermes 2 Pro 7B (tool calling)
 
 Environment variables:
   CLOUDFLARE_ACCOUNT_ID   Cloudflare account ID

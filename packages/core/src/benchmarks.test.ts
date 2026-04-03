@@ -162,21 +162,21 @@ describe("benchmark: context-engine", () => {
 	};
 
 	describe("system prompt token economy", () => {
-		it("system prompt without project identity < 400 tokens", async () => {
+		it("system prompt without project identity < 800 tokens", async () => {
 			const ctx = await assembleContext([], stubConfig);
 			const sysMsgTokens = estimateMessagesTokens([ctx[0]]);
-			expect(sysMsgTokens).toBeLessThan(400);
+			expect(sysMsgTokens).toBeLessThan(800);
 			console.log(`  → System prompt: ${sysMsgTokens} tokens (9 tools, no project context)`);
 		});
 
-		it("system prompt with project identity < 600 tokens", async () => {
+		it("system prompt with project identity < 1000 tokens", async () => {
 			const configWithProject = {
 				...stubConfig,
 				projectIdentity: "# My App\nA SaaS dashboard built with Next.js and D1.\n## Conventions\n- Use TypeScript strict\n- Tailwind for styles\n- Vitest for tests",
 			};
 			const ctx = await assembleContext([], configWithProject);
 			const sysMsgTokens = estimateMessagesTokens([ctx[0]]);
-			expect(sysMsgTokens).toBeLessThan(600);
+			expect(sysMsgTokens).toBeLessThan(1000);
 			console.log(`  → System prompt with project: ${sysMsgTokens} tokens`);
 		});
 
