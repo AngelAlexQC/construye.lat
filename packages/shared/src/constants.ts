@@ -3,9 +3,9 @@ export const VERSION = "0.2.0";
 /** Default context window sizes by model */
 export const MODEL_CONTEXT_SIZES: Record<string, number> = {
 	// Frontier models on Workers AI
-	"@cf/moonshot/kimi-k2.5": 128_000,
+	"@cf/moonshotai/kimi-k2.5": 128_000,
 	"@cf/qwen/qwq-32b": 32_000,
-	"@cf/qwen/qwen3-coder-30b-a3b": 32_000,
+	"@cf/qwen/qwen3-30b-a3b-fp8": 32_000,
 	// Strong models on Workers AI
 	"@cf/qwen/qwen2.5-coder-32b-instruct": 32_000,
 	"@cf/openai/gpt-oss-120b": 128_000,
@@ -34,11 +34,11 @@ export const MAX_ERROR_RETRIES = 3;
 /** Models available on Workers AI — keyed by task role */
 export const WORKERS_AI_MODEL_MAP = {
 	/** Heavy coding — best open model for SWE tasks */
-	heavy: "@cf/moonshot/kimi-k2.5",
+	heavy: "@cf/moonshotai/kimi-k2.5",
 	/** Reasoning — dedicated thinking model */
 	reasoning: "@cf/qwen/qwq-32b",
 	/** Fast — tiny MoE, instant responses, file ops */
-	fast: "@cf/qwen/qwen3-coder-30b-a3b",
+	fast: "@cf/qwen/qwen3-30b-a3b-fp8",
 	/** Fallback — strong general purpose */
 	general: "@cf/meta/llama-3.3-70b-instruct-fp8-fast",
 } as const;

@@ -1,0 +1,37 @@
+{
+  "benchmark": "HumanEval",
+  "source": "https://github.com/openai/human-eval",
+  "model": "@cf/moonshotai/kimi-k2.5",
+  "model_short": "kimi-k2.5",
+  "problems_total": 164,
+  "problems_run": 3,
+  "pass_at_k": 1,
+  "passed": 0,
+  "failed": 3,
+  "api_errors": 0,
+  "pass_rate": 0,
+  "total_time_ms": 91315.339222,
+  "avg_time_per_problem_ms": 30438.446407333333,
+  "timestamp": "2026-04-03T05:23:23.838Z",
+  "platform": "Cloudflare Workers AI via construye.lat",
+  "results": [
+    {
+      "task_id": "HumanEval/0",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-u6yzT7/test.py\", line 12, in <module>\n    undefinedundefinedundefinedundefinedundefinedundefinedundefinedundefinedundefinedundefinedundefinedu",
+      "time_ms": 29375.601936000003
+    },
+    {
+      "task_id": "HumanEval/1",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-QLqDDO/test.py\", line 12, in <module>\n    undefinedundefinedundefinedundefinedundefinedundefinedundefinedundefinedundefinedundefinedundefinedu",
+      "time_ms": 38969.096938
+    },
+    {
+      "task_id": "HumanEval/2",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-4H8Qlv/test.py\", line 12, in <module>\n    undefinedundefinedundefinedundefinedundefinedundefinedundefinedundefinedundefinedundefinedundefinedu",
+      "time_ms": 22970.406606999997
+    }
+  ]
+}
