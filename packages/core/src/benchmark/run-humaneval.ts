@@ -5,17 +5,20 @@
  * Runs OpenAI's HumanEval (164 Python problems) against Workers AI models.
  * This is the SAME benchmark used by Claude, GPT, Gemini, etc.
  *
+ * OPTIMIZED: Parallel execution with configurable concurrency.
+ * Sequential (~2.2h) → Parallel 20x (~5min)
+ *
  * How it works:
  *   1. Load HumanEval JSONL (164 problems)
- *   2. For each problem, send prompt to Workers AI model
- *   3. Extract Python code from response
- *   4. Combine with test harness
- *   5. Execute Python tests with 10s timeout
- *   6. Score pass/fail
+ *   2. Fire N problems concurrently to Workers AI
+ *   3. Extract Python code from each response
+ *   4. Execute Python tests in parallel with 10s timeout per test
+ *   5. Score pass/fail and produce industry comparison
  *
  * Usage:
  *   npx tsx packages/core/src/benchmark/run-humaneval.ts
  *   npx tsx packages/core/src/benchmark/run-humaneval.ts --model qwq-32b
+ *   npx tsx packages/core/src/benchmark/run-humaneval.ts --concurrency 20  # parallel workers
  *   npx tsx packages/core/src/benchmark/run-humaneval.ts --limit 10        # first 10 problems
  *   npx tsx packages/core/src/benchmark/run-humaneval.ts --problems 0,5,10 # specific problems
  *   npx tsx packages/core/src/benchmark/run-humaneval.ts --k 5             # Pass@5 (5 attempts)
@@ -248,13 +251,18 @@ The function signature and docstring are already provided — complete the imple
 	let fullResponse = "";
 	let tokens = 0;
 
+	const fastConfig: ModelConfig = {
+		...modelConfig,
+		max_tokens: 1024,
+	};
+
 	try {
-		for await (const chunk of provider.stream(messages, modelConfig)) {
-			if (chunk.type === "text") {
-				fullResponse += chunk.text;
+		for await (const chunk of provider.stream(messages, fastConfig)) {
+			if (chunk.type === "text" && "content" in chunk) {
+				fullResponse += (chunk as { content: string }).content;
 			}
-			if (chunk.type === "usage") {
-				tokens = (chunk as { input_tokens?: number; output_tokens?: number }).output_tokens || 0;
+			if (chunk.type === "usage" && "output_tokens" in chunk) {
+				tokens = (chunk as { output_tokens: number }).output_tokens || 0;
 			}
 		}
 	} catch (err: unknown) {
@@ -276,6 +284,7 @@ interface CliConfig {
 	problems: number[] | null;
 	k: number;
 	verbose: boolean;
+	concurrency: number;
 }
 
 function parseCliArgs(): CliConfig {
@@ -285,6 +294,7 @@ function parseCliArgs(): CliConfig {
 	let problems: number[] | null = null;
 	let k = 1;
 	let verbose = true;
+	let concurrency = 15;
 
 	for (let i = 0; i < args.length; i++) {
 		if (args[i] === "--model" && args[i + 1]) {
@@ -295,12 +305,14 @@ function parseCliArgs(): CliConfig {
 			problems = args[++i].split(",").map(Number);
 		} else if (args[i] === "--k" && args[i + 1]) {
 			k = Number.parseInt(args[++i], 10);
+		} else if (args[i] === "--concurrency" && args[i + 1]) {
+			concurrency = Number.parseInt(args[++i], 10);
 		} else if (args[i] === "--quiet") {
 			verbose = false;
 		}
 	}
 
-	return { model, limit, problems, k, verbose };
+	return { model, limit, problems, k, verbose, concurrency };
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -353,7 +365,7 @@ ${BOLD}${MAGENTA}╔════════════════════
 ║                                                              ║
 ║   ${CYAN}construye.lat × HumanEval${MAGENTA}                                 ║
 ║   ${DIM}${RESET}OpenAI's Industry-Standard Coding Benchmark${MAGENTA}              ║
-║   ${DIM}${RESET}164 Python Problems · Pass@${config.k}${MAGENTA}                          ║
+║   ${DIM}${RESET}164 Python Problems · Pass@${config.k} · ${config.concurrency}x Parallel${MAGENTA}              ║
 ║                                                              ║
 ╚══════════════════════════════════════════════════════════════╝${RESET}
 `);
@@ -401,24 +413,51 @@ ${BOLD}${MAGENTA}╔════════════════════
 		provider: "workers-ai",
 		model: config.model,
 		temperature: 0.2,
-		max_tokens: 2048,
+		max_tokens: 1024,
 	};
 
-	// ── Run benchmark ──
-	console.log(section(`RUNNING HumanEval (${problems.length} problems, Pass@${config.k})`));
+	// ── Estimate ──
+	const estSeqMins = (problems.length * 48) / 60;
+	const estParMins = (problems.length * 15) / config.concurrency / 60;
+	console.log(info(`Sequential estimate: ${estSeqMins.toFixed(0)} min | Parallel (${config.concurrency}x): ${estParMins.toFixed(1)} min`));
+
+	// ── Run benchmark (PARALLEL) ──
+	console.log(section(`RUNNING HumanEval (${problems.length} problems, Pass@${config.k}, ${config.concurrency} concurrent)`));
 	console.log("");
 
-	const results: HumanEvalResult[] = [];
+	const results: HumanEvalResult[] = new Array(problems.length);
 	let passed = 0;
 	let failed = 0;
 	let errors = 0;
+	let completed = 0;
 	const startTime = performance.now();
 
-	for (let i = 0; i < problems.length; i++) {
+	// Semaphore for concurrency control
+	let activeCount = 0;
+	const queue: Array<() => void> = [];
+
+	function acquire(): Promise<void> {
+		if (activeCount < config.concurrency) {
+			activeCount++;
+			return Promise.resolve();
+		}
+		return new Promise<void>((resolve) => {
+			queue.push(() => { activeCount++; resolve(); });
+		});
+	}
+
+	function release(): void {
+		activeCount--;
+		if (queue.length > 0) {
+			const next = queue.shift()!;
+			next();
+		}
+	}
+
+	async function runProblem(i: number): Promise<void> {
+		await acquire();
 		const problem = problems[i];
-		const taskNum = i + 1;
 		const taskId = problem.task_id;
-		const prefix = `[${String(taskNum).padStart(3, " ")}/${problems.length}]`;
 
 		let taskPassed = false;
 		let bestCode = "";
@@ -426,47 +465,43 @@ ${BOLD}${MAGENTA}╔════════════════════
 		let lastError: string | undefined;
 		const taskStart = performance.now();
 
-		// Pass@k: try k times, pass if ANY attempt succeeds
-		for (let attempt = 1; attempt <= config.k; attempt++) {
-			try {
-				const { code, tokens } = await callWorkersAI(provider, modelConfig, problem);
-				totalTokens += tokens;
+		try {
+			// Pass@k: try k times, pass if ANY attempt succeeds
+			for (let attempt = 1; attempt <= config.k; attempt++) {
+				try {
+					const { code, tokens } = await callWorkersAI(provider, modelConfig, problem);
+					totalTokens += tokens;
 
-				if (code.startsWith("ERROR:")) {
-					lastError = code;
-					if (config.verbose) {
-						process.stdout.write(`${prefix} ${RED}⚡${RESET} ${taskId} attempt=${attempt} API error\n`);
+					if (code.startsWith("ERROR:")) {
+						lastError = code;
+						continue;
 					}
-					continue;
-				}
 
-				const result = await executeTest(code, problem.test, problem.entry_point);
-				if (result.passed) {
-					taskPassed = true;
-					bestCode = code;
-					break;
-				} else {
-					lastError = result.error;
-					bestCode = code;
-					if (config.verbose && config.k > 1) {
-						process.stdout.write(`${prefix} ${YELLOW}↻${RESET} ${taskId} attempt=${attempt} failed\n`);
+					const result = await executeTest(code, problem.test, problem.entry_point);
+					if (result.passed) {
+						taskPassed = true;
+						bestCode = code;
+						break;
+					} else {
+						lastError = result.error;
+						bestCode = code;
 					}
-				}
-			} catch (err: unknown) {
-				const error = err as { message?: string };
-				lastError = error.message || "Unknown error";
-				if (config.verbose) {
-					process.stdout.write(`${prefix} ${RED}⚡${RESET} ${taskId} error: ${lastError?.substring(0, 80)}\n`);
+				} catch (err: unknown) {
+					const error = err as { message?: string };
+					lastError = error.message || "Unknown error";
 				}
 			}
+		} finally {
+			release();
 		}
 
 		const taskTime = performance.now() - taskStart;
+		completed++;
 
 		if (taskPassed) {
 			passed++;
 			if (config.verbose) {
-				process.stdout.write(`${prefix} ${GREEN}✓${RESET} ${taskId} ${DIM}(${(taskTime / 1000).toFixed(1)}s)${RESET}\n`);
+				process.stdout.write(`[${String(completed).padStart(3, " ")}/${problems.length}] ${GREEN}✓${RESET} ${taskId} ${DIM}(${(taskTime / 1000).toFixed(1)}s)${RESET}\n`);
 			}
 		} else {
 			failed++;
@@ -477,11 +512,18 @@ ${BOLD}${MAGENTA}╔════════════════════
 				const shortError = lastError
 					? lastError.split("\n").pop()?.substring(0, 60) || ""
 					: "";
-				process.stdout.write(`${prefix} ${RED}✗${RESET} ${taskId} ${DIM}${shortError}${RESET}\n`);
+				process.stdout.write(`[${String(completed).padStart(3, " ")}/${problems.length}] ${RED}✗${RESET} ${taskId} ${DIM}${shortError}${RESET}\n`);
 			}
 		}
 
-		results.push({
+		// Progress bar every 10 completions
+		if (completed % 10 === 0) {
+			const elapsed = (performance.now() - startTime) / 1000;
+			const eta = (elapsed / completed) * (problems.length - completed);
+			process.stdout.write(`${CYAN}    ▸ ${completed}/${problems.length} done | ${passed} passed | ETA: ${eta.toFixed(0)}s${RESET}\n`);
+		}
+
+		results[i] = {
 			task_id: taskId,
 			passed: taskPassed,
 			attempts: config.k,
@@ -489,14 +531,11 @@ ${BOLD}${MAGENTA}╔════════════════════
 			generated_code: bestCode,
 			time_ms: taskTime,
 			tokens_used: totalTokens,
-		});
-
-		// Progress every 10 problems
-		if (taskNum % 10 === 0 && !config.verbose) {
-			const pct = ((passed / taskNum) * 100).toFixed(1);
-			process.stdout.write(`${info(`Progress: ${taskNum}/${problems.length} | Pass rate: ${pct}%`)}\n`);
-		}
+		};
 	}
+
+	// Launch all problems in parallel, controlled by semaphore
+	await Promise.all(problems.map((_, i) => runProblem(i)));
 
 	const totalTime = performance.now() - startTime;
 

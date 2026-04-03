@@ -1,0 +1,46 @@
+{
+  "benchmark": "HumanEval",
+  "source": "https://github.com/openai/human-eval",
+  "model": "@cf/moonshotai/kimi-k2.5",
+  "model_short": "kimi-k2.5",
+  "problems_total": 164,
+  "problems_run": 5,
+  "pass_at_k": 1,
+  "passed": 3,
+  "failed": 2,
+  "api_errors": 0,
+  "pass_rate": 60,
+  "total_time_ms": 49057.088248,
+  "avg_time_per_problem_ms": 9811.4176496,
+  "timestamp": "2026-04-03T05:35:12.949Z",
+  "platform": "Cloudflare Workers AI via construye.lat",
+  "results": [
+    {
+      "task_id": "HumanEval/0",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-iAB29z/test.py\", line 34, in <module>\n    check(has_close_elements)\n  File \"/tmp/humaneval-iAB29z/test.py\", line 24, in check\n    assert candi",
+      "time_ms": 21566.392975000002
+    },
+    {
+      "task_id": "HumanEval/1",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-fExkel/test.py\", line 36, in <module>\n    check(separate_paren_groups)\n  File \"/tmp/humaneval-fExkel/test.py\", line 24, in check\n    assert ca",
+      "time_ms": 49055.81398
+    },
+    {
+      "task_id": "HumanEval/2",
+      "passed": true,
+      "time_ms": 18368.006756
+    },
+    {
+      "task_id": "HumanEval/3",
+      "passed": true,
+      "time_ms": 12357.351378000001
+    },
+    {
+      "task_id": "HumanEval/4",
+      "passed": true,
+      "time_ms": 24067.365774
+    }
+  ]
+}

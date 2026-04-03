@@ -1,0 +1,34 @@
+{
+  "benchmark": "HumanEval",
+  "source": "https://github.com/openai/human-eval",
+  "model": "@cf/moonshotai/kimi-k2.5",
+  "model_short": "kimi-k2.5",
+  "problems_total": 164,
+  "problems_run": 3,
+  "pass_at_k": 1,
+  "passed": 3,
+  "failed": 0,
+  "api_errors": 0,
+  "pass_rate": 100,
+  "total_time_ms": 144825.62761,
+  "avg_time_per_problem_ms": 48275.20920333333,
+  "timestamp": "2026-04-03T05:26:39.627Z",
+  "platform": "Cloudflare Workers AI via construye.lat",
+  "results": [
+    {
+      "task_id": "HumanEval/0",
+      "passed": true,
+      "time_ms": 41510.003298999996
+    },
+    {
+      "task_id": "HumanEval/1",
+      "passed": true,
+      "time_ms": 32130.027077
+    },
+    {
+      "task_id": "HumanEval/2",
+      "passed": true,
+      "time_ms": 71185.10766000001
+    }
+  ]
+}
