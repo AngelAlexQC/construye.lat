@@ -72,6 +72,15 @@ export async function runAgentLoop(
 		// Execute each tool call — errors become LLM-visible context, not blind retries
 		let hasErrors = false;
 		for (const call of response.message.tool_calls) {
+			// Detect infinite tool loops
+			const { isLoop, record } = detectToolLoop(call, recentToolCalls);
+			if (isLoop) {
+				messages.push({
+					role: "system",
+					content: `[Agent] Tool "${call.name}" was called ${record.count} times with the same arguments. You are stuck in a loop. Try a completely different approach — examine the conversation history and the actual error/content before repeating.`,
+				});
+			}
+
 			const result = await executeToolSmart(call, config);
 			messages.push({
 				role: "tool",
