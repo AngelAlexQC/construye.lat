@@ -1,7 +1,7 @@
 {
 	"name": "construye",
 	"version": "0.2.0",
-	"description": "AI coding agent powered by Cloudflare — open source CLI",
+	"description": "Agente de código IA en Cloudflare — open source, gratis, sin configuración",
 	"type": "module",
 	"license": "MIT",
 	"repository": {
@@ -10,14 +10,38 @@
 		"directory": "packages/cli"
 	},
 	"homepage": "https://construye.lat",
-	"keywords": ["ai", "coding-agent", "cloudflare", "cli", "llm", "developer-tools"],
+	"bugs": {
+		"url": "https://github.com/construye-lat/construye/issues"
+	},
+	"keywords": [
+		"ai",
+		"coding-agent",
+		"cloudflare",
+		"workers-ai",
+		"cli",
+		"llm",
+		"developer-tools",
+		"code-generation",
+		"autonomous-agent",
+		"open-source",
+		"kimi",
+		"qwen",
+		"agentic"
+	],
 	"bin": {
 		"construye": "dist/index.js"
 	},
 	"main": "dist/index.js",
-	"files": ["dist", "README.md"],
+	"files": [
+		"dist",
+		"README.md"
+	],
 	"engines": {
 		"node": ">=22"
+	},
+	"publishConfig": {
+		"access": "public",
+		"registry": "https://registry.npmjs.org/"
 	},
 	"scripts": {
 		"build": "tsup",
@@ -27,6 +51,7 @@
 		"prepublishOnly": "pnpm build"
 	},
 	"dependencies": {
+		"@inkjs/ui": "^2.0.0",
 		"chalk": "^5.6.2",
 		"cli-highlight": "^2.1.11",
 		"ink": "^5.1.0",

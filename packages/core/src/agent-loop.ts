@@ -37,11 +37,11 @@ function detectToolLoop(
 	return { isLoop: false, record };
 }
 
-/** Tools that verify code — auto-triggered after edits */
-const VERIFY_COMMANDS: Record<string, string[]> = {
-	"edit_file": ["typecheck"],
-	"write_file": ["typecheck"],
-};
+/**
+ * After any of these tools succeed, offer the model a verification nudge.
+ * We don't auto-run tests blindly — we inject a reminder so the model decides.
+ */
+const CODE_VERIFY_NUDGE = `[Agent] Código modificado. Si el proyecto tiene tests, considera correr run_tests para verificar que nada se rompió. Si hay errores de tipos, usa typecheck.`;
 
 /** Run the agent loop: LLM → tool calls → results → observe → self-heal → repeat */
 export async function runAgentLoop(
@@ -94,11 +94,21 @@ export async function runAgentLoop(
 		}
 
 		// Self-healing: if code-mutating tools failed, inject a reflection nudge
-		// so the LLM sees the error and can try a different approach next turn
 		if (hasErrors) {
 			messages.push({
 				role: "system",
-				content: "[Agent] One or more tool calls failed. Review the errors above. Diagnose what went wrong and try a different approach — do not repeat the same call.",
+				content: "[Agent] Una o más herramientas fallaron. Lee los errores anteriores, diagnostica la causa raíz, y prueba un enfoque diferente — no repitas la misma llamada.",
+			});
+		}
+
+		// Verification nudge: if code was successfully modified, remind the model to verify
+		const didMutate = response.message.tool_calls?.some(
+			(c) => CODE_MUTATING_TOOLS.has(c.name) && !hasErrors,
+		);
+		if (didMutate && !hasErrors) {
+			messages.push({
+				role: "system",
+				content: CODE_VERIFY_NUDGE,
 			});
 		}
 

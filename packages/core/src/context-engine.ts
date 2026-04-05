@@ -1,6 +1,36 @@
+import * as fs from "node:fs";
+import * as path from "node:path";
+import { execSync } from "node:child_process";
 import type { Message } from "@construye/shared";
 import { estimateMessagesTokens, MODEL_CONTEXT_SIZES } from "@construye/shared";
 import type { AgentConfig } from "./types.ts";
+
+/** Read current git branch (silent if not in a repo) */
+function getGitBranch(workingDir?: string): string | null {
+	try {
+		return execSync("git rev-parse --abbrev-ref HEAD", {
+			cwd: workingDir,
+			stdio: ["ignore", "pipe", "ignore"],
+			timeout: 2000,
+		})
+			.toString()
+			.trim();
+	} catch {
+		return null;
+	}
+}
+
+/** Read package.json name + version from the working directory */
+function getPackageMeta(workingDir?: string): { name?: string; version?: string } {
+	if (!workingDir) return {};
+	try {
+		const raw = fs.readFileSync(path.join(workingDir, "package.json"), "utf-8");
+		const pkg = JSON.parse(raw) as { name?: string; version?: string };
+		return { name: pkg.name, version: pkg.version };
+	} catch {
+		return {};
+	}
+}
 
 /** Assemble the full context for the LLM */
 export async function assembleContext(
@@ -25,6 +55,16 @@ export async function assembleContext(
 /** Build the system prompt from project identity + tool stubs + skills */
 function buildSystemPrompt(config: AgentConfig): string {
 	const parts: string[] = [];
+
+	// Live project metadata — gives the model immediate situational awareness
+	const workingDir = (config as unknown as { workingDir?: string }).workingDir;
+	const branch = getGitBranch(workingDir);
+	const pkg = getPackageMeta(workingDir);
+	const metaParts: string[] = [];
+	if (pkg.name) metaParts.push(`project: ${pkg.name}${pkg.version ? `@${pkg.version}` : ""}`);
+	if (branch) metaParts.push(`branch: ${branch}`);
+	metaParts.push(`node: ${process.version}`);
+	if (metaParts.length) parts.push(`[${metaParts.join(" · ")}]`);
 
 	// Core identity
 	parts.push(`You are construye.lat, an expert AI coding agent that helps developers build, debug, and ship software.
