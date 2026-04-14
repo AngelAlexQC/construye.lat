@@ -1,8 +1,46 @@
 # construye.lat — Plan Estratégico v2: Investigación + Web + Distribución
 
-> **Fecha:** 1 Abril 2026
+> **Fecha:** 1 Abril 2026 (actualizado 2 Abril 2026)
 > **Basado en:** Investigación de mercado con Tavily (Pragmatic Engineer Survey 2026, análisis competitivo, canales distribución)
-> **Estado:** PLAN — Pendiente de aprobación
+> **Estado:** EN EJECUCIÓN — Fase 4+6 completadas, Fase 7 siguiente
+
+---
+
+## PROGRESO (2 Abril 2026)
+
+### ✅ Completado desde que se escribió este plan
+
+| Item | Estado | Evidencia |
+|---|---|---|
+| Worker API desplegado | ✅ | `https://construye-worker.quirozai.workers.dev` — health OK |
+| Web Dashboard funcional | ✅ | `https://construye-web.pages.dev` — chat streaming |
+| Browser Worker (Puppeteer) | ✅ | `https://construye-browser.quirozai.workers.dev` |
+| GitHub OAuth con creds reales | ✅ | 302 redirect a GitHub con client_id real |
+| DO con streaming (SSE → WS) | ✅ | Kimi K2.5 streaming chunks vía WebSocket |
+| D1 database + migrations | ✅ | `b5a429de-8690-4e96-9e52-2b2d2484af8b` |
+| 243 tests (16 archivos) | ✅ | 0 fallas, 9.4s total |
+| 18 herramientas reales | ✅ | Incluyendo web_fetch, web_crawl, task_memory |
+| WebSocket auth fix | ✅ | Query param + header para browsers |
+| Rate limiting | ✅ | Token bucket per-user |
+| Cancel support | ✅ | Interrumpir streaming mid-response |
+
+### Tu Posición Real (Actualizada)
+
+| Lo que tienes | Lo que falta |
+|---|---|
+| ✅ Monorepo funcional (11 paquetes) | Landing page marketing |
+| ✅ CLI con React Ink (polished) | npm publish / instalador |
+| ✅ Smart model routing (100% accuracy) | 0 usuarios, 0 GitHub stars |
+| ✅ Worker desplegado con streaming | Extended thinking (QwQ-32B) |
+| ✅ Web dashboard con chat funcional | BYOK providers (Claude/OpenAI) |
+| ✅ GitHub OAuth real | MCP support |
+| ✅ Browser Worker con Puppeteer | Code Mode / token savings |
+| ✅ 243 tests pasando | Contenido público / blog |
+| ✅ Narrativa LATAM única | Presencia en comunidades |
+
+### Siguiente: Fase 7 — Landing + Distribución npm
+
+Ver `docs/implementation-plan.md` Fase 7 para detalles.
 
 ---
 

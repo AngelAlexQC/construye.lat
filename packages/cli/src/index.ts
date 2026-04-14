@@ -2,12 +2,17 @@
 
 import * as fs from "node:fs";
 import * as path from "node:path";
-import * as os from "node:os";
 import React from "react";
 import { render } from "ink";
 import { parseArgs } from "./args.ts";
+import { ensureCloudflareSetup, loadConfig } from "./setup/first-run.ts";
 import { createSession, FileSessionStore } from "@construye/core";
-import { ClaudeProvider, WorkersAIProvider, DemoProvider, WORKERS_AI_MODELS } from "@construye/providers";
+import {
+	ClaudeProvider,
+	WorkersAIProvider,
+	DemoProvider,
+	WORKERS_AI_MODELS,
+} from "@construye/providers";
 import type { ProviderAdapter } from "@construye/providers";
 import { createDefaultRegistry, type ToolContext } from "@construye/tools";
 import type { ToolCall } from "@construye/shared";
@@ -15,87 +20,10 @@ import { BROWSER_WORKER_DEFAULTS } from "@construye/shared";
 import { App } from "./app.tsx";
 import type { AgentSetup } from "./hooks/use-agent.ts";
 
-/** Read wrangler OAuth token from ~/.wrangler/config/default.toml */
-function readWranglerToken(): string | null {
-	const paths = [
-		path.join(os.homedir(), ".wrangler", "config", "default.toml"),
-		path.join(os.homedir(), ".config", ".wrangler", "config", "default.toml"),
-	];
-	for (const p of paths) {
-		try {
-			const content = fs.readFileSync(p, "utf-8");
-			const match = content.match(/oauth_token\s*=\s*"([^"]+)"/);
-			if (match?.[1]) return match[1];
-		} catch {
-			/* not found */
-		}
-	}
-	return null;
-}
-
-/** Detect Cloudflare account ID from API */
-async function detectAccountId(token: string): Promise<string | null> {
-	try {
-		const resp = await fetch("https://api.cloudflare.com/client/v4/accounts?page=1&per_page=5", {
-			headers: { Authorization: `Bearer ${token}` },
-		});
-		const data = (await resp.json()) as { result?: { id: string; name: string }[] };
-		if (data.result?.[0]) return data.result[0].id;
-	} catch {
-		/* network error */
-	}
-	return null;
-}
-
 async function main(): Promise<void> {
 	const config = parseArgs(process.argv.slice(2));
 
-	// ── Detect best available provider ──────────────────────
-	const anthropicKey = process.env.ANTHROPIC_API_KEY;
-	let cfAccountId = process.env.CLOUDFLARE_ACCOUNT_ID;
-	let cfApiToken = process.env.CLOUDFLARE_API_TOKEN;
-	const openaiKey = process.env.OPENAI_API_KEY;
-
-	if (!cfApiToken) {
-		const wranglerToken = readWranglerToken();
-		if (wranglerToken) {
-			cfApiToken = wranglerToken;
-			if (!cfAccountId) {
-				cfAccountId = (await detectAccountId(wranglerToken)) ?? undefined;
-			}
-		}
-	}
-
-	let provider: ProviderAdapter;
-	let providerName: string;
-	let modelName: string;
-
-	if (config.demo) {
-		provider = new DemoProvider();
-		providerName = "demo";
-		modelName = "demo";
-	} else if (config.provider === "workers-ai" || (cfAccountId && cfApiToken && !anthropicKey && !openaiKey)) {
-		if (!cfAccountId || !cfApiToken) {
-			console.error("  Set CLOUDFLARE_ACCOUNT_ID and CLOUDFLARE_API_TOKEN, or run 'npx wrangler login'.");
-			process.exit(1);
-		}
-		provider = new WorkersAIProvider(cfAccountId, cfApiToken);
-		providerName = "workers-ai (Cloudflare)";
-		modelName =
-			config.model.startsWith("@cf/") || config.model.startsWith("@hf/")
-				? config.model
-				: (WORKERS_AI_MODELS[config.model as keyof typeof WORKERS_AI_MODELS] ?? WORKERS_AI_MODELS["qwen-coder"]);
-	} else if (anthropicKey) {
-		provider = new ClaudeProvider(anthropicKey);
-		providerName = "anthropic";
-		modelName = config.model;
-	} else {
-		provider = new DemoProvider();
-		providerName = "demo (no API key)";
-		modelName = "demo";
-	}
-
-	// ── Browser Worker (auto-configure if not set) ────────
+	// ── Browser Worker (free, built-in) ───────────────────────
 	if (!process.env.BROWSER_WORKER_URL) {
 		process.env.BROWSER_WORKER_URL = BROWSER_WORKER_DEFAULTS.url;
 	}
@@ -103,7 +31,84 @@ async function main(): Promise<void> {
 		process.env.BROWSER_WORKER_KEY = BROWSER_WORKER_DEFAULTS.key;
 	}
 
-	// ── Tool registry ──────────────────────────────────────
+	// ── Provider selection ────────────────────────────────────
+	let provider: ProviderAdapter;
+	let providerName: string;
+	let modelName: string;
+	let providerType: "workers-ai" | "claude";
+
+	if (config.demo) {
+		provider = new DemoProvider();
+		providerName = "demo";
+		modelName = "demo";
+		providerType = "workers-ai";
+	} else if (config.provider === "anthropic") {
+		// Explicitly requested Claude
+		const anthropicKey = process.env.ANTHROPIC_API_KEY;
+		if (!anthropicKey) {
+			console.error("\n  Error: --provider anthropic requiere ANTHROPIC_API_KEY en el entorno.\n");
+			process.exit(1);
+		}
+		provider = new ClaudeProvider(anthropicKey);
+		providerName = "anthropic (Claude)";
+		modelName = config.model;
+		providerType = "claude";
+	} else if (config.provider === "openai") {
+		// OpenAI explicit — fallback to Workers AI if no key
+		const openaiKey = process.env.OPENAI_API_KEY;
+		if (!openaiKey) {
+			console.error("\n  Error: --provider openai requiere OPENAI_API_KEY en el entorno.\n");
+			process.exit(1);
+		}
+		// Use Claude provider as OpenAI-compatible for now
+		provider = new ClaudeProvider(openaiKey);
+		providerName = "openai";
+		modelName = config.model;
+		providerType = "claude";
+	} else {
+		// DEFAULT: Cloudflare Workers AI — auto-configure if needed
+		const creds = await ensureCloudflareSetup();
+
+		if (!creds) {
+			// Hard fallback: if wrangler login failed/cancelled, check Claude key
+			const anthropicKey = process.env.ANTHROPIC_API_KEY;
+			if (anthropicKey) {
+				console.log("  Usando Anthropic Claude como fallback.\n");
+				provider = new ClaudeProvider(anthropicKey);
+				providerName = "anthropic (Claude)";
+				modelName = config.model;
+				providerType = "claude";
+			} else {
+				console.log("  Iniciando en modo demo (sin provider configurado).\n");
+				provider = new DemoProvider();
+				providerName = "demo";
+				modelName = "demo";
+				providerType = "workers-ai";
+			}
+		} else {
+			// Resolve model: explicit flag > saved config > default (kimi-k2.5)
+			const savedConfig = loadConfig();
+			const defaultModel =
+				config.model !== "claude-opus-4-5-20251101" // not the default Claude model
+					? config.model
+					: (savedConfig?.provider === "workers-ai"
+						? WORKERS_AI_MODELS["kimi-k2.5"]
+						: WORKERS_AI_MODELS["kimi-k2.5"]);
+
+			const resolvedModel =
+				defaultModel.startsWith("@cf/") || defaultModel.startsWith("@hf/")
+					? defaultModel
+					: (WORKERS_AI_MODELS[defaultModel as keyof typeof WORKERS_AI_MODELS] ??
+						WORKERS_AI_MODELS["kimi-k2.5"]);
+
+			provider = new WorkersAIProvider(creds.accountId, creds.apiToken);
+			providerName = "Cloudflare Workers AI";
+			modelName = resolvedModel;
+			providerType = "workers-ai";
+		}
+	}
+
+	// ── Tool registry ──────────────────────────────────────────
 	const registry = createDefaultRegistry();
 	const workingDir = process.cwd();
 	const sessionStore = new FileSessionStore();
@@ -160,15 +165,13 @@ async function main(): Promise<void> {
 		/* no CONSTRUYE.md */
 	}
 
-	// ── Build agent setup and render Ink app ───────────────
-	const isOpenAI = providerName.includes("workers-ai") || providerName.includes("openai");
-
+	// ── Build agent setup and render Ink app ───────────────────
 	const setup: AgentSetup = {
 		provider,
 		modelConfig: {
-			provider: (isOpenAI ? "workers-ai" : "claude") as "workers-ai" | "claude",
+			provider: providerType,
 			model: modelName,
-			max_tokens: 4096,
+			max_tokens: 8192,
 		},
 		tools: anthropicTools,
 		toolExecutor,

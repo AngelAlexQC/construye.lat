@@ -10,6 +10,7 @@
     "node": ">=22"
   },
   "scripts": {
+    "build": "turbo run build",
     "dev": "turbo run dev --filter=@construye/cli",
     "test": "turbo run test",
     "test:watch": "turbo run test:watch",

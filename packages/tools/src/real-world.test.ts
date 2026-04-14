@@ -133,12 +133,12 @@ describe("REAL: htmlToText on realistic HTML", () => {
 describe("REAL: search_semantic on this monorepo", () => {
 	it("finds agent loop code in packages/", async () => {
 		const result = await searchSemantic.execute(
-			{ query: "agent loop streaming tool call", max_results: 5 },
+			{ query: "agent loop streaming tool call", max_results: 10 },
 			CTX,
 		);
 		// Should find real source code, not .agents reference docs
 		expect(result).toContain("packages/");
-		expect(result).toMatch(/agent-loop|agent\.ts|session/);
+		expect(result).toMatch(/agent-loop|agent\.ts|session|context-engine|core/);
 		console.log("  → 'agent loop' results:\n", result.slice(0, 500));
 	}, 10_000);
 

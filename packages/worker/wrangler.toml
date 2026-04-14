@@ -14,22 +14,24 @@ new_classes = ["ConstruyeAgent"]
 [vars]
 AI_GATEWAY_URL = "https://gateway.ai.cloudflare.com/v1"
 
-[[r2_buckets]]
-binding = "BUCKET"
-bucket_name = "construye-files"
+# R2 for file storage (uncomment when needed)
+# [[r2_buckets]]
+# binding = "BUCKET"
+# bucket_name = "construye-files"
 
 [[d1_databases]]
 binding = "DB"
 database_name = "construye-db"
-database_id = ""
+database_id = "b5a429de-8690-4e96-9e52-2b2d2484af8b"
 
 [[kv_namespaces]]
 binding = "KV"
-id = ""
+id = "9ca90e70e31144a5ba6d0dc86c6bf2d0"
 
-[[queues.producers]]
-binding = "QUEUE"
-queue = "construye-tasks"
+# Queue for async tasks (uncomment when needed)
+# [[queues.producers]]
+# binding = "QUEUE"
+# queue = "construye-tasks"
 
 [ai]
 binding = "AI"

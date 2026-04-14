@@ -1,0 +1,961 @@
+{
+  "benchmark": "HumanEval",
+  "source": "https://github.com/openai/human-eval",
+  "model": "@cf/moonshotai/kimi-k2.5",
+  "model_short": "kimi-k2.5",
+  "problems_total": 164,
+  "problems_run": 164,
+  "pass_at_k": 1,
+  "passed": 42,
+  "failed": 122,
+  "api_errors": 0,
+  "pass_rate": 25.609756097560975,
+  "total_time_ms": 359600.707739,
+  "avg_time_per_problem_ms": 2192.6872423109753,
+  "timestamp": "2026-04-03T05:42:05.348Z",
+  "platform": "Cloudflare Workers AI via construye.lat",
+  "results": [
+    {
+      "task_id": "HumanEval/0",
+      "passed": true,
+      "time_ms": 20525.965285
+    },
+    {
+      "task_id": "HumanEval/1",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-bHeHsE/test.py\", line 36, in <module>\n    check(separate_paren_groups)\n  File \"/tmp/humaneval-bHeHsE/test.py\", line 24, in check\n    assert ca",
+      "time_ms": 49011.359464999994
+    },
+    {
+      "task_id": "HumanEval/2",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-K17w9k/test.py\", line 29, in <module>\n    check(truncate_number)\n  File \"/tmp/humaneval-K17w9k/test.py\", line 24, in check\n    assert candidat",
+      "time_ms": 83737.90749
+    },
+    {
+      "task_id": "HumanEval/3",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-k2gvFG/test.py\", line 33, in <module>\n    check(below_zero)\n  File \"/tmp/humaneval-k2gvFG/test.py\", line 25, in check\n    assert candidate([])",
+      "time_ms": 25555.390401999997
+    },
+    {
+      "task_id": "HumanEval/4",
+      "passed": true,
+      "time_ms": 10393.558719999999
+    },
+    {
+      "task_id": "HumanEval/5",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-kxZa7j/test.py\", line 28, in <module>\n    check(intersperse)\n  File \"/tmp/humaneval-kxZa7j/test.py\", line 23, in check\n    assert candidate([]",
+      "time_ms": 19373.856176
+    },
+    {
+      "task_id": "HumanEval/6",
+      "passed": true,
+      "time_ms": 19590.537973000002
+    },
+    {
+      "task_id": "HumanEval/7",
+      "passed": true,
+      "time_ms": 19652.477561
+    },
+    {
+      "task_id": "HumanEval/8",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-aeRPNO/test.py\", line 31, in <module>\n    check(sum_product)\n  File \"/tmp/humaneval-aeRPNO/test.py\", line 24, in check\n    assert candidate([]",
+      "time_ms": 31034.682839
+    },
+    {
+      "task_id": "HumanEval/9",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-R2jsjo/test.py\", line 28, in <module>\n    check(rolling_max)\n  File \"/tmp/humaneval-R2jsjo/test.py\", line 22, in check\n    assert candidate([]",
+      "time_ms": 30934.544002
+    },
+    {
+      "task_id": "HumanEval/10",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-PSnmRd/test.py\", line 39, in <module>\n    check(make_palindrome)\n  File \"/tmp/humaneval-PSnmRd/test.py\", line 32, in check\n    assert candidat",
+      "time_ms": 64039.255955
+    },
+    {
+      "task_id": "HumanEval/11",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-M7hvnc/test.py\", line 27, in <module>\n    check(string_xor)\n  File \"/tmp/humaneval-M7hvnc/test.py\", line 22, in check\n    assert candidate('11",
+      "time_ms": 49010.453926999995
+    },
+    {
+      "task_id": "HumanEval/12",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-o9a5l6/test.py\", line 31, in <module>\n    check(longest)\n  File \"/tmp/humaneval-o9a5l6/test.py\", line 27, in check\n    assert candidate(['x', ",
+      "time_ms": 21004.843679
+    },
+    {
+      "task_id": "HumanEval/13",
+      "passed": true,
+      "time_ms": 23182.081427999998
+    },
+    {
+      "task_id": "HumanEval/14",
+      "passed": true,
+      "time_ms": 28086.8022
+    },
+    {
+      "task_id": "HumanEval/15",
+      "passed": true,
+      "time_ms": 15044.532867
+    },
+    {
+      "task_id": "HumanEval/16",
+      "passed": true,
+      "time_ms": 20790.889997000002
+    },
+    {
+      "task_id": "HumanEval/17",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-bEfI87/test.py\", line 36, in <module>\n    check(parse_music)\n  File \"/tmp/humaneval-bEfI87/test.py\", line 29, in check\n    assert candidate(''",
+      "time_ms": 54887.168835
+    },
+    {
+      "task_id": "HumanEval/18",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-lCcMlU/test.py\", line 30, in <module>\n    check(how_many_times)\n  File \"/tmp/humaneval-lCcMlU/test.py\", line 24, in check\n    assert candidate",
+      "time_ms": 62525.372457
+    },
+    {
+      "task_id": "HumanEval/19",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-4evlwd/test.py\", line 30, in <module>\n    check(sort_numbers)\n  File \"/tmp/humaneval-4evlwd/test.py\", line 23, in check\n    assert candidate('",
+      "time_ms": 22687.275443
+    },
+    {
+      "task_id": "HumanEval/20",
+      "passed": false,
+      "error": "  File \"/tmp/humaneval-ALUwdb/test.py\", line 10\n    min_diff = float('\n                     ^\nSyntaxError: unterminated string literal (detected at line 10)\n",
+      "time_ms": 17601.24259
+    },
+    {
+      "task_id": "HumanEval/21",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-SsF1SN/test.py\", line 29, in <module>\n    check(rescale_to_unit)\n  File \"/tmp/humaneval-SsF1SN/test.py\", line 22, in check\n    assert candidat",
+      "time_ms": 35447.310235
+    },
+    {
+      "task_id": "HumanEval/22",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-gqC6cO/test.py\", line 28, in <module>\n    check(filter_integers)\n  File \"/tmp/humaneval-gqC6cO/test.py\", line 23, in check\n    assert candidat",
+      "time_ms": 71037.90259000001
+    },
+    {
+      "task_id": "HumanEval/23",
+      "passed": true,
+      "time_ms": 5481.353494000003
+    },
+    {
+      "task_id": "HumanEval/24",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-B5kYUv/test.py\", line 27, in <module>\n    check(largest_divisor)\n  File \"/tmp/humaneval-B5kYUv/test.py\", line 20, in check\n    assert candidat",
+      "time_ms": 38936.61437699999
+    },
+    {
+      "task_id": "HumanEval/25",
+      "passed": false,
+      "error": "  File \"/tmp/humaneval-0ODxI3/test.py\", line 2\n    \"\"\" Return list of prime factors of given integer in the order from smallest to largest.\n    ^\nSyntaxError: unterminated triple-quoted string literal",
+      "time_ms": 25249.306535
+    },
+    {
+      "task_id": "HumanEval/26",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-WGtGhw/test.py\", line 27, in <module>\n    check(remove_duplicates)\n  File \"/tmp/humaneval-WGtGhw/test.py\", line 22, in check\n    assert candid",
+      "time_ms": 25388.115191
+    },
+    {
+      "task_id": "HumanEval/27",
+      "passed": true,
+      "time_ms": 11123.103054999996
+    },
+    {
+      "task_id": "HumanEval/28",
+      "passed": true,
+      "time_ms": 20894.835829999996
+    },
+    {
+      "task_id": "HumanEval/29",
+      "passed": true,
+      "time_ms": 7804.715753999997
+    },
+    {
+      "task_id": "HumanEval/30",
+      "passed": true,
+      "time_ms": 12400.151223
+    },
+    {
+      "task_id": "HumanEval/31",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-6aeakc/test.py\", line 45, in <module>\n    check(is_prime)\n  File \"/tmp/humaneval-6aeakc/test.py\", line 29, in check\n    assert candidate(6) ==",
+      "time_ms": 35507.555390999994
+    },
+    {
+      "task_id": "HumanEval/32",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-RYimum/test.py\", line 50, in <module>\n    check(find_zero)\n  File \"/tmp/humaneval-RYimum/test.py\", line 46, in check\n    assert math.fabs(poly",
+      "time_ms": 24121.535706000002
+    },
+    {
+      "task_id": "HumanEval/33",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-2ledk0/test.py\", line 31, in <module>\n    check(sort_third)\n  File \"/tmp/humaneval-2ledk0/test.py\", line 21, in check\n    assert tuple(candida",
+      "time_ms": 46939.48934
+    },
+    {
+      "task_id": "HumanEval/34",
+      "passed": true,
+      "time_ms": 82010.04351799999
+    },
+    {
+      "task_id": "HumanEval/35",
+      "passed": true,
+      "time_ms": 29011.972904000002
+    },
+    {
+      "task_id": "HumanEval/36",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-evESz7/test.py\", line 32, in <module>\n    check(fizz_buzz)\n  File \"/tmp/humaneval-evESz7/test.py\", line 21, in check\n    assert candidate(50) ",
+      "time_ms": 23251.539165999995
+    },
+    {
+      "task_id": "HumanEval/37",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-qjg7jF/test.py\", line 27, in <module>\n    check(sort_even)\n  File \"/tmp/humaneval-qjg7jF/test.py\", line 21, in check\n    assert tuple(candidat",
+      "time_ms": 61916.145698
+    },
+    {
+      "task_id": "HumanEval/38",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-9vUCyh/test.py\", line 28, in <module>\n    check(decode_cyclic)\n  File \"/tmp/humaneval-9vUCyh/test.py\", line 23, in check\n    encoded_str = enc",
+      "time_ms": 24319.792208000006
+    },
+    {
+      "task_id": "HumanEval/39",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-eTCUsG/test.py\", line 39, in <module>\n    check(prime_fib)\n  File \"/tmp/humaneval-eTCUsG/test.py\", line 26, in check\n    assert candidate(1) =",
+      "time_ms": 51449.096014
+    },
+    {
+      "task_id": "HumanEval/40",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-ODgIlJ/test.py\", line 41, in <module>\n    check(triples_sum_to_zero)\n  File \"/tmp/humaneval-ODgIlJ/test.py\", line 29, in check\n    assert cand",
+      "time_ms": 26589.369453
+    },
+    {
+      "task_id": "HumanEval/41",
+      "passed": true,
+      "time_ms": 26235.578161000012
+    },
+    {
+      "task_id": "HumanEval/42",
+      "passed": true,
+      "time_ms": 28765.880004000006
+    },
+    {
+      "task_id": "HumanEval/43",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-rnt9Q2/test.py\", line 41, in <module>\n    check(pairs_sum_to_zero)\n  File \"/tmp/humaneval-rnt9Q2/test.py\", line 28, in check\n    assert candid",
+      "time_ms": 17811.773273999992
+    },
+    {
+      "task_id": "HumanEval/44",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-K9KAoR/test.py\", line 34, in <module>\n    check(change_base)\n  File \"/tmp/humaneval-K9KAoR/test.py\", line 23, in check\n    assert candidate(8,",
+      "time_ms": 61540.45682199999
+    },
+    {
+      "task_id": "HumanEval/45",
+      "passed": true,
+      "time_ms": 26074.190548
+    },
+    {
+      "task_id": "HumanEval/46",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-jtlOME/test.py\", line 34, in <module>\n    check(fib4)\n  File \"/tmp/humaneval-jtlOME/test.py\", line 27, in check\n    assert candidate(5) == 4\n ",
+      "time_ms": 51683.701969999995
+    },
+    {
+      "task_id": "HumanEval/47",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-gQyvPH/test.py\", line 27, in <module>\n    check(median)\n  File \"/tmp/humaneval-gQyvPH/test.py\", line 19, in check\n    assert candidate([3, 1, ",
+      "time_ms": 34443.563981
+    },
+    {
+      "task_id": "HumanEval/48",
+      "passed": true,
+      "time_ms": 26863.903535999998
+    },
+    {
+      "task_id": "HumanEval/49",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-3DJqZ8/test.py\", line 35, in <module>\n    check(modp)\n  File \"/tmp/humaneval-3DJqZ8/test.py\", line 25, in check\n    assert candidate(3, 5) == ",
+      "time_ms": 21032.581987000012
+    },
+    {
+      "task_id": "HumanEval/50",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-mrRr4H/test.py\", line 25, in <module>\n    check(decode_shift)\n  File \"/tmp/humaneval-mrRr4H/test.py\", line 20, in check\n    encoded_str = enco",
+      "time_ms": 15640.869722999996
+    },
+    {
+      "task_id": "HumanEval/51",
+      "passed": true,
+      "time_ms": 18453.515610999995
+    },
+    {
+      "task_id": "HumanEval/52",
+      "passed": true,
+      "time_ms": 29667.908951000005
+    },
+    {
+      "task_id": "HumanEval/53",
+      "passed": true,
+      "time_ms": 9020.499406999996
+    },
+    {
+      "task_id": "HumanEval/54",
+      "passed": false,
+      "error": "  File \"/tmp/humaneval-zEWZkv/test.py\", line 2\n    \"\"\"\n    ^\nSyntaxError: unterminated triple-quoted string literal (detected at line 24)\n",
+      "time_ms": 45013.376938999994
+    },
+    {
+      "task_id": "HumanEval/55",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-45ERFh/test.py\", line 29, in <module>\n    check(fib)\n  File \"/tmp/humaneval-45ERFh/test.py\", line 21, in check\n    assert candidate(10) == 55\n",
+      "time_ms": 54358.72523699999
+    },
+    {
+      "task_id": "HumanEval/56",
+      "passed": true,
+      "time_ms": 13091.848595000003
+    },
+    {
+      "task_id": "HumanEval/57",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-mAeiCA/test.py\", line 32, in <module>\n    check(monotonic)\n  File \"/tmp/humaneval-mAeiCA/test.py\", line 21, in check\n    assert candidate([1, ",
+      "time_ms": 25422.947578000007
+    },
+    {
+      "task_id": "HumanEval/58",
+      "passed": true,
+      "time_ms": 43109.031285000005
+    },
+    {
+      "task_id": "HumanEval/59",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-fHfT51/test.py\", line 27, in <module>\n    check(largest_prime_factor)\n  File \"/tmp/humaneval-fHfT51/test.py\", line 19, in check\n    assert can",
+      "time_ms": 26526.685738
+    },
+    {
+      "task_id": "HumanEval/60",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-2DVEIT/test.py\", line 33, in <module>\n    check(sum_to_n)\n  File \"/tmp/humaneval-2DVEIT/test.py\", line 25, in check\n    assert candidate(1) ==",
+      "time_ms": 18710.34087500001
+    },
+    {
+      "task_id": "HumanEval/61",
+      "passed": true,
+      "time_ms": 38520.252475999994
+    },
+    {
+      "task_id": "HumanEval/62",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-bYEDWP/test.py\", line 29, in <module>\n    check(derivative)\n  File \"/tmp/humaneval-bYEDWP/test.py\", line 21, in check\n    assert candidate([3,",
+      "time_ms": 38399.558741000015
+    },
+    {
+      "task_id": "HumanEval/63",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-gr1Kxc/test.py\", line 36, in <module>\n    check(fibfib)\n  File \"/tmp/humaneval-gr1Kxc/test.py\", line 26, in check\n    assert candidate(2) == 1",
+      "time_ms": 56334.26266500002
+    },
+    {
+      "task_id": "HumanEval/64",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-sXSS5V/test.py\", line 37, in <module>\n    check(vowels_count)\n  File \"/tmp/humaneval-sXSS5V/test.py\", line 24, in check\n    assert candidate(\"",
+      "time_ms": 25400.698995000013
+    },
+    {
+      "task_id": "HumanEval/65",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-GAYoD3/test.py\", line 27, in <module>\n    check(circular_shift)\n  File \"/tmp/humaneval-GAYoD3/test.py\", line 17, in check\n    assert candidate",
+      "time_ms": 25658.669437000004
+    },
+    {
+      "task_id": "HumanEval/66",
+      "passed": true,
+      "time_ms": 37460.036836000014
+    },
+    {
+      "task_id": "HumanEval/67",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-214cDD/test.py\", line 30, in <module>\n    check(fruit_distribution)\n  File \"/tmp/humaneval-214cDD/test.py\", line 21, in check\n    assert candi",
+      "time_ms": 29521.614568999998
+    },
+    {
+      "task_id": "HumanEval/68",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-bX1WBz/test.py\", line 57, in <module>\n    check(pluck)\n  File \"/tmp/humaneval-bX1WBz/test.py\", line 43, in check\n    assert candidate([4,2,3])",
+      "time_ms": 39126.84778899999
+    },
+    {
+      "task_id": "HumanEval/69",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-MiV6tE/test.py\", line 49, in <module>\n    check(search)\n  File \"/tmp/humaneval-MiV6tE/test.py\", line 19, in check\n    assert candidate([5, 5, ",
+      "time_ms": 29473.23185499999
+    },
+    {
+      "task_id": "HumanEval/70",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-aHi2Fl/test.py\", line 34, in <module>\n    check(strange_sort_list)\n  File \"/tmp/humaneval-aHi2Fl/test.py\", line 19, in check\n    assert candid",
+      "time_ms": 57920.60018400001
+    },
+    {
+      "task_id": "HumanEval/71",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-fY30bE/test.py\", line 33, in <module>\n    check(triangle_area)\n  File \"/tmp/humaneval-fY30bE/test.py\", line 19, in check\n    assert candidate(",
+      "time_ms": 25727.451215999987
+    },
+    {
+      "task_id": "HumanEval/72",
+      "passed": false,
+      "error": "  File \"/tmp/humaneval-3Bxoic/test.py\", line 2\n    '''\n    ^\nSyntaxError: unterminated triple-quoted string literal (detected at line 20)\n",
+      "time_ms": 26913.47028399998
+    },
+    {
+      "task_id": "HumanEval/73",
+      "passed": true,
+      "time_ms": 54455.095866999996
+    },
+    {
+      "task_id": "HumanEval/74",
+      "passed": true,
+      "time_ms": 49985.534841999994
+    },
+    {
+      "task_id": "HumanEval/75",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-ZUFYF4/test.py\", line 28, in <module>\n    check(is_multiply_prime)\n  File \"/tmp/humaneval-ZUFYF4/test.py\", line 15, in check\n    assert candid",
+      "time_ms": 38256.19464
+    },
+    {
+      "task_id": "HumanEval/76",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-wqSwzd/test.py\", line 35, in <module>\n    check(is_simple_power)\n  File \"/tmp/humaneval-wqSwzd/test.py\", line 20, in check\n    assert candidat",
+      "time_ms": 19536.664458999992
+    },
+    {
+      "task_id": "HumanEval/77",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-dz2oUc/test.py\", line 35, in <module>\n    check(iscube)\n  File \"/tmp/humaneval-dz2oUc/test.py\", line 21, in check\n    assert candidate(1) == T",
+      "time_ms": 52501.38200899999
+    },
+    {
+      "task_id": "HumanEval/78",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-x1e44N/test.py\", line 39, in <module>\n    check(hex_key)\n  File \"/tmp/humaneval-x1e44N/test.py\", line 26, in check\n    assert candidate(\"AB\") ",
+      "time_ms": 28863.45309700002
+    },
+    {
+      "task_id": "HumanEval/79",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-zZr0C7/test.py\", line 30, in <module>\n    check(decimal_to_binary)\n  File \"/tmp/humaneval-zZr0C7/test.py\", line 20, in check\n    assert candid",
+      "time_ms": 22622.81780999998
+    },
+    {
+      "task_id": "HumanEval/80",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-gId6CB/test.py\", line 30, in <module>\n    check(is_happy)\n  File \"/tmp/humaneval-gId6CB/test.py\", line 20, in check\n    assert candidate(\"a\") ",
+      "time_ms": 26465.573768000002
+    },
+    {
+      "task_id": "HumanEval/81",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-zQmtso/test.py\", line 45, in <module>\n    check(numerical_letter_grade)\n  File \"/tmp/humaneval-zQmtso/test.py\", line 33, in check\n    assert c",
+      "time_ms": 25238.398243000003
+    },
+    {
+      "task_id": "HumanEval/82",
+      "passed": true,
+      "time_ms": 17043.73049399999
+    },
+    {
+      "task_id": "HumanEval/83",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-hIJA1a/test.py\", line 25, in <module>\n    check(starts_one_ends)\n  File \"/tmp/humaneval-hIJA1a/test.py\", line 14, in check\n    assert candidat",
+      "time_ms": 48478.24729899998
+    },
+    {
+      "task_id": "HumanEval/84",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-NbjDSx/test.py\", line 34, in <module>\n    check(solve)\n  File \"/tmp/humaneval-NbjDSx/test.py\", line 23, in check\n    assert candidate(1000) ==",
+      "time_ms": 24613.685524
+    },
+    {
+      "task_id": "HumanEval/85",
+      "passed": true,
+      "time_ms": 26660.68772399999
+    },
+    {
+      "task_id": "HumanEval/86",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-by3pGX/test.py\", line 33, in <module>\n    check(anti_shuffle)\n  File \"/tmp/humaneval-by3pGX/test.py\", line 21, in check\n    assert candidate('",
+      "time_ms": 37385.073604000005
+    },
+    {
+      "task_id": "HumanEval/87",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-XmehYT/test.py\", line 59, in <module>\n    check(get_row)\n  File \"/tmp/humaneval-XmehYT/test.py\", line 28, in check\n    assert candidate([\n    ",
+      "time_ms": 42349.244227999996
+    },
+    {
+      "task_id": "HumanEval/88",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-A10l1s/test.py\", line 37, in <module>\n    check(sort_array)\n  File \"/tmp/humaneval-A10l1s/test.py\", line 24, in check\n    assert candidate([])",
+      "time_ms": 50189.63573400001
+    },
+    {
+      "task_id": "HumanEval/89",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-MPmxrd/test.py\", line 33, in <module>\n    check(encrypt)\n  File \"/tmp/humaneval-MPmxrd/test.py\", line 19, in check\n    assert candidate('hi') ",
+      "time_ms": 25551.544181000005
+    },
+    {
+      "task_id": "HumanEval/90",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-dJkUYx/test.py\", line 32, in <module>\n    check(next_smallest)\n  File \"/tmp/humaneval-dJkUYx/test.py\", line 19, in check\n    assert candidate(",
+      "time_ms": 25468.689151
+    },
+    {
+      "task_id": "HumanEval/91",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-XHyP6D/test.py\", line 32, in <module>\n    check(is_bored)\n  File \"/tmp/humaneval-XHyP6D/test.py\", line 20, in check\n    assert candidate(\"Hell",
+      "time_ms": 44380.88358299999
+    },
+    {
+      "task_id": "HumanEval/92",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-AS9gzZ/test.py\", line 41, in <module>\n    check(any_int)\n  File \"/tmp/humaneval-AS9gzZ/test.py\", line 26, in check\n    assert candidate(2, 3, ",
+      "time_ms": 52173.990332000016
+    },
+    {
+      "task_id": "HumanEval/93",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-WKYY7u/test.py\", line 32, in <module>\n    check(encode)\n  File \"/tmp/humaneval-WKYY7u/test.py\", line 22, in check\n    assert candidate('TEST')",
+      "time_ms": 46155.300881
+    },
+    {
+      "task_id": "HumanEval/94",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-ucaIPW/test.py\", line 43, in <module>\n    check(skjkasdkd)\n  File \"/tmp/humaneval-ucaIPW/test.py\", line 21, in check\n    assert candidate([0,3",
+      "time_ms": 38631.230109
+    },
+    {
+      "task_id": "HumanEval/95",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-4nVe9a/test.py\", line 33, in <module>\n    check(check_dict_case)\n  File \"/tmp/humaneval-4nVe9a/test.py\", line 20, in check\n    assert candidat",
+      "time_ms": 36828.996069999994
+    },
+    {
+      "task_id": "HumanEval/96",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-zcFQCn/test.py\", line 31, in <module>\n    check(count_up_to)\n  File \"/tmp/humaneval-zcFQCn/test.py\", line 18, in check\n    assert candidate(5)",
+      "time_ms": 28839.271284999995
+    },
+    {
+      "task_id": "HumanEval/97",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-uTamiF/test.py\", line 32, in <module>\n    check(multiply)\n  File \"/tmp/humaneval-uTamiF/test.py\", line 18, in check\n    assert candidate(148, ",
+      "time_ms": 18170.017407000007
+    },
+    {
+      "task_id": "HumanEval/98",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-FrHH67/test.py\", line 30, in <module>\n    check(count_upper)\n  File \"/tmp/humaneval-FrHH67/test.py\", line 17, in check\n    assert candidate('a",
+      "time_ms": 29871.922128000006
+    },
+    {
+      "task_id": "HumanEval/99",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-Y3wdKY/test.py\", line 36, in <module>\n    check(closest_integer)\n  File \"/tmp/humaneval-Y3wdKY/test.py\", line 26, in check\n    assert candidat",
+      "time_ms": 59516.996292999975
+    },
+    {
+      "task_id": "HumanEval/100",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-3VvHks/test.py\", line 33, in <module>\n    check(make_a_pile)\n  File \"/tmp/humaneval-3VvHks/test.py\", line 22, in check\n    assert candidate(3)",
+      "time_ms": 58479.065688
+    },
+    {
+      "task_id": "HumanEval/101",
+      "passed": true,
+      "time_ms": 39670.399565
+    },
+    {
+      "task_id": "HumanEval/102",
+      "passed": true,
+      "time_ms": 24047.286425
+    },
+    {
+      "task_id": "HumanEval/103",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-jwRvQx/test.py\", line 37, in <module>\n    check(rounded_avg)\n  File \"/tmp/humaneval-jwRvQx/test.py\", line 19, in check\n    assert candidate(1,",
+      "time_ms": 39137.35730900001
+    },
+    {
+      "task_id": "HumanEval/104",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-rY5Fk9/test.py\", line 30, in <module>\n    check(unique_digits)\n  File \"/tmp/humaneval-rY5Fk9/test.py\", line 20, in check\n    assert candidate(",
+      "time_ms": 36106.72046699998
+    },
+    {
+      "task_id": "HumanEval/105",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-Gr0pG7/test.py\", line 42, in <module>\n    check(by_length)\n  File \"/tmp/humaneval-Gr0pG7/test.py\", line 31, in check\n    assert candidate([2, ",
+      "time_ms": 23701.061790999986
+    },
+    {
+      "task_id": "HumanEval/106",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-Mvgvrq/test.py\", line 22, in <module>\n    check(f)\n  File \"/tmp/humaneval-Mvgvrq/test.py\", line 16, in check\n    assert candidate(5) == [1, 2,",
+      "time_ms": 45867.120111000026
+    },
+    {
+      "task_id": "HumanEval/107",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-f97VF8/test.py\", line 29, in <module>\n    check(even_odd_palindrome)\n  File \"/tmp/humaneval-f97VF8/test.py\", line 16, in check\n    assert cand",
+      "time_ms": 38739.59692599997
+    },
+    {
+      "task_id": "HumanEval/108",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-VWPBjm/test.py\", line 32, in <module>\n    check(count_nums)\n  File \"/tmp/humaneval-VWPBjm/test.py\", line 18, in check\n    assert candidate([])",
+      "time_ms": 23108.97965199998
+    },
+    {
+      "task_id": "HumanEval/109",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-Xav5hx/test.py\", line 43, in <module>\n    check(move_one_ball)\n  File \"/tmp/humaneval-Xav5hx/test.py\", line 35, in check\n    assert candidate(",
+      "time_ms": 22123.569598000002
+    },
+    {
+      "task_id": "HumanEval/110",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-huRzKS/test.py\", line 33, in <module>\n    check(exchange)\n  File \"/tmp/humaneval-huRzKS/test.py\", line 21, in check\n    assert candidate([1, 2",
+      "time_ms": 25487.279217000003
+    },
+    {
+      "task_id": "HumanEval/111",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-87xsmk/test.py\", line 35, in <module>\n    check(histogram)\n  File \"/tmp/humaneval-87xsmk/test.py\", line 21, in check\n    assert candidate('a b",
+      "time_ms": 20888.312279000005
+    },
+    {
+      "task_id": "HumanEval/112",
+      "passed": true,
+      "time_ms": 15858.682908999996
+    },
+    {
+      "task_id": "HumanEval/113",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-snZLou/test.py\", line 33, in <module>\n    check(odd_count)\n  File \"/tmp/humaneval-snZLou/test.py\", line 20, in check\n    assert candidate(['12",
+      "time_ms": 33390.165986999986
+    },
+    {
+      "task_id": "HumanEval/114",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-Nvma8b/test.py\", line 32, in <module>\n    check(minSubArraySum)\n  File \"/tmp/humaneval-Nvma8b/test.py\", line 16, in check\n    assert candidate",
+      "time_ms": 28346.854611000017
+    },
+    {
+      "task_id": "HumanEval/115",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-APnUg2/test.py\", line 56, in <module>\n    check(max_fill)\n  File \"/tmp/humaneval-APnUg2/test.py\", line 45, in check\n    assert candidate([[0,0",
+      "time_ms": 24458.148377000005
+    },
+    {
+      "task_id": "HumanEval/116",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-ra5eM9/test.py\", line 34, in <module>\n    check(sort_array)\n  File \"/tmp/humaneval-ra5eM9/test.py\", line 20, in check\n    assert candidate([1,",
+      "time_ms": 31034.153652000008
+    },
+    {
+      "task_id": "HumanEval/117",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-CuVkn5/test.py\", line 34, in <module>\n    check(select_words)\n  File \"/tmp/humaneval-CuVkn5/test.py\", line 21, in check\n    assert candidate(\"",
+      "time_ms": 22236.275979999977
+    },
+    {
+      "task_id": "HumanEval/118",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-yi5DwY/test.py\", line 42, in <module>\n    check(get_closest_vowel)\n  File \"/tmp/humaneval-yi5DwY/test.py\", line 23, in check\n    assert candid",
+      "time_ms": 22325.498192
+    },
+    {
+      "task_id": "HumanEval/119",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-ye9rBq/test.py\", line 41, in <module>\n    check(match_parens)\n  File \"/tmp/humaneval-ye9rBq/test.py\", line 23, in check\n    assert candidate([",
+      "time_ms": 53142.675094000006
+    },
+    {
+      "task_id": "HumanEval/120",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-YzVWK0/test.py\", line 49, in <module>\n    check(maximum)\n  File \"/tmp/humaneval-YzVWK0/test.py\", line 33, in check\n    assert candidate([-3, -",
+      "time_ms": 19699.141769999987
+    },
+    {
+      "task_id": "HumanEval/121",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-ZCmpNW/test.py\", line 29, in <module>\n    check(solution)\n  File \"/tmp/humaneval-ZCmpNW/test.py\", line 17, in check\n    assert candidate([5, 8",
+      "time_ms": 21688.460808999982
+    },
+    {
+      "task_id": "HumanEval/122",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-u1W9fO/test.py\", line 32, in <module>\n    check(add_elements)\n  File \"/tmp/humaneval-u1W9fO/test.py\", line 22, in check\n    assert candidate([",
+      "time_ms": 21635.601171999966
+    },
+    {
+      "task_id": "HumanEval/123",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-Byin26/test.py\", line 34, in <module>\n    check(get_odd_collatz)\n  File \"/tmp/humaneval-Byin26/test.py\", line 25, in check\n    assert candidat",
+      "time_ms": 26265.610495
+    },
+    {
+      "task_id": "HumanEval/124",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-wtezlj/test.py\", line 61, in <module>\n    check(valid_date)\n  File \"/tmp/humaneval-wtezlj/test.py\", line 28, in check\n    assert candidate('03",
+      "time_ms": 22292.236872000038
+    },
+    {
+      "task_id": "HumanEval/125",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-lOobH3/test.py\", line 27, in <module>\n    check(split_words)\n  File \"/tmp/humaneval-lOobH3/test.py\", line 17, in check\n    assert candidate(\"H",
+      "time_ms": 22237.891393000027
+    },
+    {
+      "task_id": "HumanEval/126",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-ohzLIi/test.py\", line 42, in <module>\n    check(is_sorted)\n  File \"/tmp/humaneval-ohzLIi/test.py\", line 24, in check\n    assert candidate([5])",
+      "time_ms": 28970.43445500004
+    },
+    {
+      "task_id": "HumanEval/127",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-qfEEkE/test.py\", line 41, in <module>\n    check(intersection)\n  File \"/tmp/humaneval-qfEEkE/test.py\", line 28, in check\n    assert candidate((",
+      "time_ms": 29228.230068999983
+    },
+    {
+      "task_id": "HumanEval/128",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-OAIuQA/test.py\", line 35, in <module>\n    check(prod_signs)\n  File \"/tmp/humaneval-OAIuQA/test.py\", line 21, in check\n    assert candidate([1,",
+      "time_ms": 29188.859032999957
+    },
+    {
+      "task_id": "HumanEval/129",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-KCMo5V/test.py\", line 55, in <module>\n    check(minPath)\n  File \"/tmp/humaneval-KCMo5V/test.py\", line 39, in check\n    assert candidate([[1, 2",
+      "time_ms": 25759.11487400002
+    },
+    {
+      "task_id": "HumanEval/130",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-f7F7YA/test.py\", line 40, in <module>\n    check(tri)\n  File \"/tmp/humaneval-f7F7YA/test.py\", line 26, in check\n    assert candidate(3) == [1, ",
+      "time_ms": 52026.65314999997
+    },
+    {
+      "task_id": "HumanEval/131",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-ZhVGxX/test.py\", line 28, in <module>\n    check(digits)\n  File \"/tmp/humaneval-ZhVGxX/test.py\", line 16, in check\n    assert candidate(5) == 5",
+      "time_ms": 25245.32154600002
+    },
+    {
+      "task_id": "HumanEval/132",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-NdfMam/test.py\", line 40, in <module>\n    check(is_nested)\n  File \"/tmp/humaneval-NdfMam/test.py\", line 21, in check\n    assert candidate('[[]",
+      "time_ms": 24422.126094000007
+    },
+    {
+      "task_id": "HumanEval/133",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-BQBisG/test.py\", line 41, in <module>\n    check(sum_squares)\n  File \"/tmp/humaneval-BQBisG/test.py\", line 22, in check\n    assert candidate([1",
+      "time_ms": 28094.67867699999
+    },
+    {
+      "task_id": "HumanEval/134",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-8LJpEU/test.py\", line 37, in <module>\n    check(check_if_last_char_is_a_letter)\n  File \"/tmp/humaneval-8LJpEU/test.py\", line 21, in check\n    ",
+      "time_ms": 19099.98605300003
+    },
+    {
+      "task_id": "HumanEval/135",
+      "passed": true,
+      "time_ms": 22337.45751499996
+    },
+    {
+      "task_id": "HumanEval/136",
+      "passed": true,
+      "time_ms": 13990.81932900002
+    },
+    {
+      "task_id": "HumanEval/137",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-ehupmy/test.py\", line 34, in <module>\n    check(compare_one)\n  File \"/tmp/humaneval-ehupmy/test.py\", line 20, in check\n    assert candidate(1,",
+      "time_ms": 37365.237528999976
+    },
+    {
+      "task_id": "HumanEval/138",
+      "passed": true,
+      "time_ms": 15994.758510000014
+    },
+    {
+      "task_id": "HumanEval/139",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-a4KJSS/test.py\", line 29, in <module>\n    check(special_factorial)\n  File \"/tmp/humaneval-a4KJSS/test.py\", line 20, in check\n    assert candid",
+      "time_ms": 29223.239982999978
+    },
+    {
+      "task_id": "HumanEval/140",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-lVAG3q/test.py\", line 29, in <module>\n    check(fix_spaces)\n  File \"/tmp/humaneval-lVAG3q/test.py\", line 19, in check\n    assert candidate(\"Ex",
+      "time_ms": 18884.108831999998
+    },
+    {
+      "task_id": "HumanEval/141",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-jGybBJ/test.py\", line 55, in <module>\n    check(file_name_check)\n  File \"/tmp/humaneval-jGybBJ/test.py\", line 22, in check\n    assert candidat",
+      "time_ms": 26528.176302000007
+    },
+    {
+      "task_id": "HumanEval/142",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-f8WgV0/test.py\", line 38, in <module>\n    check(sum_squares)\n  File \"/tmp/humaneval-f8WgV0/test.py\", line 22, in check\n    assert candidate([1",
+      "time_ms": 27318.455891999998
+    },
+    {
+      "task_id": "HumanEval/143",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-kR3dAk/test.py\", line 40, in <module>\n    check(words_in_sentence)\n  File \"/tmp/humaneval-kR3dAk/test.py\", line 28, in check\n    assert candid",
+      "time_ms": 30569.704946000013
+    },
+    {
+      "task_id": "HumanEval/144",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-GCBvDT/test.py\", line 39, in <module>\n    check(simplify)\n  File \"/tmp/humaneval-GCBvDT/test.py\", line 20, in check\n    assert candidate(\"1/5\"",
+      "time_ms": 30573.61155000003
+    },
+    {
+      "task_id": "HumanEval/145",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-fTjHvC/test.py\", line 31, in <module>\n    check(order_by_points)\n  File \"/tmp/humaneval-fTjHvC/test.py\", line 19, in check\n    assert candidat",
+      "time_ms": 35014.253134
+    },
+    {
+      "task_id": "HumanEval/146",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-JlGMNK/test.py\", line 29, in <module>\n    check(specialFilter)\n  File \"/tmp/humaneval-JlGMNK/test.py\", line 16, in check\n    assert candidate(",
+      "time_ms": 25597.754860999994
+    },
+    {
+      "task_id": "HumanEval/147",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-R33EZy/test.py\", line 27, in <module>\n    check(get_max_triples)\n  File \"/tmp/humaneval-R33EZy/test.py\", line 21, in check\n    assert candidat",
+      "time_ms": 33249.65435900004
+    },
+    {
+      "task_id": "HumanEval/148",
+      "passed": true,
+      "time_ms": 19940.926921000006
+    },
+    {
+      "task_id": "HumanEval/149",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-9MOU8A/test.py\", line 35, in <module>\n    check(sorted_list_sum)\n  File \"/tmp/humaneval-9MOU8A/test.py\", line 23, in check\n    assert candidat",
+      "time_ms": 29567.624146000016
+    },
+    {
+      "task_id": "HumanEval/150",
+      "passed": true,
+      "time_ms": 22931.778024
+    },
+    {
+      "task_id": "HumanEval/151",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-6y5bex/test.py\", line 35, in <module>\n    check(double_the_difference)\n  File \"/tmp/humaneval-6y5bex/test.py\", line 20, in check\n    assert ca",
+      "time_ms": 47918.289295000024
+    },
+    {
+      "task_id": "HumanEval/152",
+      "passed": false,
+      "error": "  File \"/tmp/humaneval-WUu44I/test.py\", line 2\n    \"\"\"I think we all remember that feeling when the result of some long-awaited\n    ^\nSyntaxError: unterminated triple-quoted string literal (detected a",
+      "time_ms": 24288.864636000013
+    },
+    {
+      "task_id": "HumanEval/153",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-y8vHjX/test.py\", line 39, in <module>\n    check(Strongest_Extension)\n  File \"/tmp/humaneval-y8vHjX/test.py\", line 25, in check\n    assert cand",
+      "time_ms": 19810.175400000007
+    },
+    {
+      "task_id": "HumanEval/154",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-URO7Ce/test.py\", line 31, in <module>\n    check(cycpattern_check)\n  File \"/tmp/humaneval-URO7Ce/test.py\", line 22, in check\n    assert  candid",
+      "time_ms": 23166.93371999997
+    },
+    {
+      "task_id": "HumanEval/155",
+      "passed": true,
+      "time_ms": 17264.040339
+    },
+    {
+      "task_id": "HumanEval/156",
+      "passed": true,
+      "time_ms": 21987.64081999997
+    },
+    {
+      "task_id": "HumanEval/157",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-6ZRmAq/test.py\", line 33, in <module>\n    check(right_angle_triangle)\n  File \"/tmp/humaneval-6ZRmAq/test.py\", line 17, in check\n    assert can",
+      "time_ms": 22247.709672999976
+    },
+    {
+      "task_id": "HumanEval/158",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-OlCeqV/test.py\", line 33, in <module>\n    check(find_max)\n  File \"/tmp/humaneval-OlCeqV/test.py\", line 18, in check\n    assert (candidate([\"na",
+      "time_ms": 21545.983346000023
+    },
+    {
+      "task_id": "HumanEval/159",
+      "passed": true,
+      "time_ms": 15543.109039000003
+    },
+    {
+      "task_id": "HumanEval/160",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-Cwt2GU/test.py\", line 42, in <module>\n    check(do_algebra)\n  File \"/tmp/humaneval-Cwt2GU/test.py\", line 33, in check\n    assert candidate(['*",
+      "time_ms": 24714.766172000032
+    },
+    {
+      "task_id": "HumanEval/161",
+      "passed": true,
+      "time_ms": 10815.205561999988
+    },
+    {
+      "task_id": "HumanEval/162",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-m0vah9/test.py\", line 25, in <module>\n    check(string_to_md5)\n  File \"/tmp/humaneval-m0vah9/test.py\", line 15, in check\n    assert candidate(",
+      "time_ms": 35239.90910799999
+    },
+    {
+      "task_id": "HumanEval/163",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/humaneval-6xkH1W/test.py\", line 28, in <module>\n    check(generate_integers)\n  File \"/tmp/humaneval-6xkH1W/test.py\", line 18, in check\n    assert candid",
+      "time_ms": 23832.644914000004
+    }
+  ]
+}

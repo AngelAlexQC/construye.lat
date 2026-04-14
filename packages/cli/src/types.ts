@@ -18,8 +18,8 @@ export interface CliState {
 
 export const DEFAULT_CLI_CONFIG: CliConfig = {
 	mode: "interactive",
-	model: "claude-sonnet-4-20250514",
-	provider: "anthropic",
+	model: "kimi-k2.5",
+	provider: "workers-ai",
 	cloud: false,
 	verbose: false,
 	demo: false,

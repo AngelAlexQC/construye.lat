@@ -23,6 +23,8 @@ export { webCrawl } from "./tools/web-crawl.ts";
 export { webExtract } from "./tools/web-extract.ts";
 export { projectDetect } from "./tools/project-detect.ts";
 export { taskMemory } from "./tools/task-memory.ts";
+export { runTests } from "./tools/run-tests.ts";
+export { typecheck } from "./tools/typecheck.ts";
 
 import type { ToolHandler } from "./types.ts";
 import { ToolRegistry } from "./registry.ts";
@@ -46,12 +48,14 @@ import { webCrawl } from "./tools/web-crawl.ts";
 import { webExtract } from "./tools/web-extract.ts";
 import { projectDetect } from "./tools/project-detect.ts";
 import { taskMemory } from "./tools/task-memory.ts";
+import { runTests } from "./tools/run-tests.ts";
+import { typecheck } from "./tools/typecheck.ts";
 
 const ALL_TOOLS: ToolHandler[] = [
 	readFile, writeFile, editFile, searchText, searchSemantic,
 	listDir, glob, codeMode, exec, git, preview, browse,
 	askUser, delegate, webSearch, webFetch, webCrawl, webExtract,
-	projectDetect, taskMemory,
+	projectDetect, taskMemory, runTests, typecheck,
 ];
 
 export function createDefaultRegistry(): ToolRegistry {

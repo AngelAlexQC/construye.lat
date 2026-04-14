@@ -1,6 +1,36 @@
+import * as fs from "node:fs";
+import * as path from "node:path";
+import { execSync } from "node:child_process";
 import type { Message } from "@construye/shared";
 import { estimateMessagesTokens, MODEL_CONTEXT_SIZES } from "@construye/shared";
 import type { AgentConfig } from "./types.ts";
+
+/** Read current git branch (silent if not in a repo) */
+function getGitBranch(workingDir?: string): string | null {
+	try {
+		return execSync("git rev-parse --abbrev-ref HEAD", {
+			cwd: workingDir,
+			stdio: ["ignore", "pipe", "ignore"],
+			timeout: 2000,
+		})
+			.toString()
+			.trim();
+	} catch {
+		return null;
+	}
+}
+
+/** Read package.json name + version from the working directory */
+function getPackageMeta(workingDir?: string): { name?: string; version?: string } {
+	if (!workingDir) return {};
+	try {
+		const raw = fs.readFileSync(path.join(workingDir, "package.json"), "utf-8");
+		const pkg = JSON.parse(raw) as { name?: string; version?: string };
+		return { name: pkg.name, version: pkg.version };
+	} catch {
+		return {};
+	}
+}
 
 /** Assemble the full context for the LLM */
 export async function assembleContext(
@@ -26,13 +56,44 @@ export async function assembleContext(
 function buildSystemPrompt(config: AgentConfig): string {
 	const parts: string[] = [];
 
+	// Live project metadata — gives the model immediate situational awareness
+	const workingDir = (config as unknown as { workingDir?: string }).workingDir;
+	const branch = getGitBranch(workingDir);
+	const pkg = getPackageMeta(workingDir);
+	const metaParts: string[] = [];
+	if (pkg.name) metaParts.push(`project: ${pkg.name}${pkg.version ? `@${pkg.version}` : ""}`);
+	if (branch) metaParts.push(`branch: ${branch}`);
+	metaParts.push(`node: ${process.version}`);
+	if (metaParts.length) parts.push(`[${metaParts.join(" · ")}]`);
+
 	// Core identity
 	parts.push(`You are construye.lat, an expert AI coding agent that helps developers build, debug, and ship software.
 When the user asks to interact with files or run commands, you MUST use the provided tools. Do NOT describe what you would do — actually call the tools.
 Be concise. Execute first, explain after. Show results, not intentions.
-When you encounter errors after using a tool, analyze the error and try a different approach.
 
 LANGUAGE RULE: Detect the language of each user message and respond in EXACTLY that language. Never default to any specific language.
+
+SELF-CORRECTION PROTOCOL:
+When a tool call returns an error, you MUST:
+1. Read the error message carefully — identify the root cause, not the symptom.
+2. Analyze what went wrong — was it a wrong file path, bad search string, syntax error, logic error?
+3. Try a DIFFERENT approach — do not repeat the same call with the same arguments.
+4. If an edit_file fails because old_string wasn't found, re-read the file first to get the exact current content.
+5. If exec fails, check the error output and fix the underlying issue before retrying.
+
+VERIFICATION PROTOCOL:
+After making code changes (edit_file, write_file), verify your work:
+1. If the project has tests: run them with exec to confirm nothing broke.
+2. If you wrote new code: read it back to confirm the edit applied correctly.
+3. If tests fail after your edit: fix the issue immediately, don't leave broken code.
+4. For multi-step tasks: verify each step before moving to the next.
+
+PLANNING PROTOCOL:
+For complex tasks (multiple files, architectural changes, new features):
+1. First, explore the codebase — read relevant files to understand the current state.
+2. Plan your approach — describe the steps you'll take before starting.
+3. Execute one step at a time, verifying each before proceeding.
+4. If a step fails, re-plan from the current state rather than pushing through.
 
 TOOL USAGE GUIDELINES:
 - For reading code: use read_file with line ranges for large files
