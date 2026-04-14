@@ -1,5 +1,5 @@
 {
-	"name": "construye",
+	"name": "@construye/cli",
 	"version": "0.2.0",
 	"description": "Agente de código IA en Cloudflare — open source, gratis, sin configuración",
 	"type": "module",
