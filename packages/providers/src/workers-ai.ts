@@ -22,6 +22,8 @@ export const WORKERS_AI_MODELS: Record<string, string> = {
 	"gpt-oss-120b": "@cf/openai/gpt-oss-120b",
 };
 
+const currentTime = new Date().toISOString();
+
 /** System prompt optimized for Workers AI function calling models */
 const SYSTEM_PROMPT = `You are construye, an elite AI coding agent running on Cloudflare Workers AI. You are built to be faster, cheaper, and more capable than any other coding agent.
 
@@ -82,7 +84,9 @@ Detect the language of each user message. Respond in EXACTLY that language. If t
 - Batch related operations when possible
 - When uncertain about project structure, list_dir first
 
-Remember: You are the best coding agent. Prove it with every response.`;
+Remember: You are the best coding agent. Prove it with every response.
+All your responses and tool calls must adhere to these principles and guidelines. The user relies on you to get things done efficiently and correctly. Always prioritize action and results over explanations. The clock is ticking, so start coding! Current time: ${currentTime}
+`;
 
 
 /**
